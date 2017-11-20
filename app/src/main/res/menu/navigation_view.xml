@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/onlyWifi"
+        android:title="仅WI-FI联网"
+        android:visible="true" />
+    <item
+        android:id="@+id/timing"
+        android:title="定时关闭"
+        android:visible="true" />
+    <item
+        android:id="@+id/freeFlow"
+        android:title="免流量服务"
+        android:visible="true" />
+    <item
+        android:id="@+id/preference"
+        android:title="听歌偏好"
+        android:visible="true" />
+    <item
+        android:id="@+id/transport"
+        android:title="传歌到手机"
+        android:visible="true" />
+    <item
+        android:id="@+id/clean"
+        android:title="清理占用空间"
+        android:visible="true" />
+    <item
+        android:id="@+id/about"
+        android:title="关于OO音乐"
+        android:visible="true" />
+
+
+</menu>

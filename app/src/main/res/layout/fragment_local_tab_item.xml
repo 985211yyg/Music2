@@ -1,0 +1,20 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/tab_item_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/dp_10"
+        android:layout_marginRight="@dimen/dp_18"/>
+
+    <com.gjiazhe.wavesidebar.WaveSideBar
+        android:id="@+id/waveSideBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:sidebar_lazy_respond="true"
+        app:sidebar_position="right" />
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:paddingBottom="@dimen/dp_4"
+    android:paddingRight="@dimen/dp_30"
+    android:paddingTop="@dimen/dp_4">
+
+    <View
+        android:id="@+id/status_bar"
+        android:layout_width="@dimen/dp_4"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:background="@color/themeColor"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/music_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_4"
+        android:layout_marginLeft="@dimen/dp_30"
+        android:text="安静了"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/sp_16" />
+
+    <TextView
+        android:id="@+id/music_singer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/music_name"
+        android:layout_marginLeft="@dimen/dp_30"
+        android:text="陈思琪" />
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/dp_10"
+        android:background="@drawable/ripple"
+        android:src="@drawable/gary_more" />
+
+</RelativeLayout>

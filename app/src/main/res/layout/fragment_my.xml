@@ -1,0 +1,288 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical"
+    tools:context="com.example.yungui.music.fragment.MyFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp_10">
+
+            <TextView
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_round_bg"
+                android:gravity="center"
+                android:padding="@dimen/dp_4"
+                android:text="11分钟" />
+
+            <ImageView
+                android:clickable="true"
+                android:id="@+id/cover"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginLeft="@dimen/dp_30"
+                android:layout_marginRight="@dimen/dp_30"
+                android:scaleType="centerCrop"
+                android:src="@drawable/circle" />
+
+            <TextView
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_round_bg"
+                android:gravity="center"
+                android:padding="@dimen/dp_4"
+                android:text="续费" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_4">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="-- poopoo --"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/sp_16" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_4"
+                android:gravity="center">
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:paddingBottom="@dimen/dp_4"
+            android:rowCount="2">
+
+            <LinearLayout
+                android:id="@+id/local"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:layout_rowWeight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_4">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40"
+                    android:src="@drawable/my_local" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="本地歌曲" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="328" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/download_song"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:layout_rowWeight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_4">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="@dimen/dp_40"
+                    android:src="@drawable/my_download" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="下载歌曲" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="328" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/recent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:layout_rowWeight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_4">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40"
+                    android:src="@drawable/my_history" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="最近播放" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="328" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:layout_rowWeight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_4">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40"
+                    android:src="@drawable/my_favorite" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="我喜欢" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="328" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/download_mv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:layout_rowWeight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_4">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40"
+                    android:src="@drawable/my_mv" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="下载MV" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="328" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bought"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:layout_rowWeight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_4">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40"
+                    android:src="@drawable/my_buy" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="已购音乐" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="328" />
+
+            </LinearLayout>
+
+        </GridLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_4"
+            android:background="@color/barColor" />
+
+    </LinearLayout>
+
+
+</ScrollView>

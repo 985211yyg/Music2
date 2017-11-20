@@ -1,0 +1,70 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/themeColor</item>
+        <item name="colorPrimaryDark">@color/themeColor</item>
+        <item name="colorAccent">@color/themeColor</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <!--<item name="android:windowActivityTransitions">true</item>-->
+
+        <!--<item name="android:windowTranslucentStatus">false</item>-->
+        <!--<item name="android:windowTranslucentNavigation">false</item>-->
+        <item name="android:windowAllowEnterTransitionOverlap">false</item>
+        <item name="android:windowAllowReturnTransitionOverlap">false</item>
+
+        <!--<item name="android:windowEnterTransition">@transition/explode</item>-->
+        <!--<item name="android:windowExitTransition">@transition/explode</item>-->
+
+
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <!--<item name="android:windowAnimationStyle">@style/Transition</item>-->
+        <!--<item name="android:windowEnterTransition">@transition/transition_enter</item>-->
+
+
+    </style>
+
+    <style name="Transition">
+        <item name="android:windowEnterTransition">@transition/explode</item>
+        <item name="android:windowReenterTransition">@transition/explode</item>
+    </style>
+
+    <style name="ActivityAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/right_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/left_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/left_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/right_out</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <style name="NavigationHeaderTextStyle">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Text1">
+        <!--<item name="android:paddingTop">1dp</item>-->
+        <!--<item name="android:paddingBottom">1dp</item>-->
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:background">@drawable/round_bound</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">5dp</item>
+
+    </style>
+
+</resources>

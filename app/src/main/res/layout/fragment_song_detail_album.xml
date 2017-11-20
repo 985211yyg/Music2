@@ -1,0 +1,121 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/themeColor"
+    android:fitsSystemWindows="true"
+    tools:context="com.example.yungui.music.fragment.SongDetailAlbumFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/singer_linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_4"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp_18"
+                android:layout_height="1dp"
+                android:layout_marginRight="@dimen/dp_4"
+                android:layout_weight="1"
+                android:background="@color/barColor" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="飞儿乐队"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:layout_width="@dimen/dp_18"
+                android:layout_height="1dp"
+                android:layout_marginLeft="@dimen/dp_4"
+                android:layout_weight="1"
+                android:background="@color/barColor" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/song_info_linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/singer_linearLayout"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/Text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/fold2"
+                android:text="SQ" />
+
+            <TextView
+                style="@style/Text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MV"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                style="@style/Text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="音效"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <com.example.yungui.music.widget.CircleImageView
+        android:id="@+id/circle_cd"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:layout_margin="@dimen/dp_10"
+        android:src="@mipmap/timg"
+        android:transitionName="shareView"
+        app:civ_border_overlay="true"
+        app:civ_border_width="@dimen/dp_4" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/dp_10"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/audiotrack" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="最近你变得很冷漠"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_14" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

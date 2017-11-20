@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/barColor">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/queue_viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="250dp" />
+
+        <com.example.mpointindicator.PointIndicator
+            android:id="@+id/queue_pointIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="8dp"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="@dimen/dp_4"
+            android:paddingBottom="@dimen/dp_10"
+            app:normal_color="@android:color/darker_gray"
+            app:point_size="@dimen/point_size"
+            app:point_space="@dimen/dp_4"
+            app:select_color="@color/themeColor" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/queue_close"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/selectableItemBackground"
+        android:text="关闭"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/sp_16" />
+
+</LinearLayout>

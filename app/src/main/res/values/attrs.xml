@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleImageView2">
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
+        <attr name="border_overlay" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="QQPlayButton">
+        <attr name="outBorderWidth" format="dimension" />
+        <attr name="normalColor" format="color" />
+        <attr name="pauseColor" format="color" />
+        <attr name="playColor" format="color" />
+        <attr name="Radius" format="dimension" />
+        <attr name="progressColor" format="color" />
+        <attr name="refreshColor" format="color" />
+        <attr name="progress" format="float" />
+        <attr name="refreshAngle" format="float" />
+        <attr name="refreshing" format="boolean" />
+    </declare-styleable>
+
+</resources>

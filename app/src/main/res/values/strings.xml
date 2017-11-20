@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Music</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_song_detail">SongDetailActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_header_text_vip">VIP中心</string>
+    <string name="navigation_header_text_personalise">个性化</string>
+    <string name="navigation_header_text_message">消息中心 </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="queryHint">搜索</string>
+    <string name="scanning">扫一扫</string>
+    <string name="distinguish">听歌识别</string>
+    <string name="exit">退出</string>
+    <string name="next_play">播放一首</string>
+    <string name="play_null">播放列表为空</string>
+
+</resources>

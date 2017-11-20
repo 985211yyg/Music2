@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/distinguish"
+        android:layout_width="150dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/distinguish_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:layout_marginEnd="360dp"
+            android:layout_marginLeft="4dp"
+            android:src="@drawable/ic_menu_distinguish"
+            tools:layout_editor_absoluteY="4dp" />
+
+        <TextView
+            android:id="@+id/distinguish_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:layout_marginTop="24dp"
+            android:layout_toRightOf="@+id/distinguish_img"
+            android:text="@string/distinguish"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/sp_16" />
+
+    </RelativeLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <RelativeLayout
+        android:id="@+id/scanning"
+        android:layout_width="150dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/scanning_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:src="@drawable/ic_menu_scanning" />
+
+        <TextView
+            android:id="@+id/scanning_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:layout_toRightOf="@+id/scanning_img"
+            android:text="@string/scanning"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/sp_16" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
