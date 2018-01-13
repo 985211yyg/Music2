@@ -6,4 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.yungui.music.activity.LockActivity">
 
+    <TextView
+        android:background="@drawable/top_gradient"
+        android:gravity="center"
+        android:text="这是锁屏界面"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </android.support.constraint.ConstraintLayout>

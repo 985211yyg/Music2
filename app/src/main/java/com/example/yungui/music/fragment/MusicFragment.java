@@ -1,7 +1,10 @@
 package com.example.yungui.music.fragment;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.media.MediaPlayer;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -11,29 +14,23 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.example.yungui.music.Interface.IConstants;
 import com.example.yungui.music.R;
-import com.example.yungui.music.adapter.TabRecyclerViewAdapter;
+import com.example.yungui.music.adapter.LocalRecyclerViewAdapter;
 import com.example.yungui.music.base.BaseFragment;
 import com.example.yungui.music.info.MusicInfo;
+import com.example.yungui.music.model.viewmodel.MusicInfoViewModel;
+import com.example.yungui.music.model.viewmodel.MusicInfoViewModelFactory;
 import com.example.yungui.music.service.MusicPlayer;
+import com.example.yungui.music.utils.InjectorUtils;
 import com.example.yungui.music.utils.MusicUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import butterknife.BindView;
 
 /**
  * Created by yungui on 2017/10/22.
@@ -41,11 +38,13 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MusicFragment extends BaseFragment {
     public static final String TAG = MusicFragment.class.getSimpleName();
-    private RecyclerView recyclerView;
-    private TabRecyclerViewAdapter tabRecyclerViewAdapter;
-    private ArrayList<MusicInfo> musics = new ArrayList<>();
+    @BindView(R.id.tab_item_recyclerView)
+    RecyclerView recyclerView;
+    private LocalRecyclerViewAdapter localRecyclerViewAdapter;
+    private List<MusicInfo> musics = new ArrayList<>();
     private PlayMusic playMusic;
     private Handler handler;
+    private MusicInfoViewModel musicInfoViewModel;
 
     public MusicFragment() {
     }
@@ -60,13 +59,31 @@ public class MusicFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Toast.makeText(mContext, "onAttach", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //注册歌曲扫描监广播接收器  ，然后更新列表
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_STARTED);
+        intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_FINISHED);
         handler = new Handler();
+
+        MusicInfoViewModelFactory factory = InjectorUtils.provideMusicViewModelFactory(mContext);
+        musicInfoViewModel = ViewModelProviders.of(this, factory).get(MusicInfoViewModel.class);
+        musicInfoViewModel.getMusicInfo().observe(this, new Observer<List<MusicInfo>>() {
+            @Override
+            public void onChanged(@Nullable List<MusicInfo> musicInfos) {
+                localRecyclerViewAdapter.addData(musicInfos);
+                localRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -75,13 +92,12 @@ public class MusicFragment extends BaseFragment {
     }
 
     @Override
-    protected void initView() {
-        recyclerView = rootView.findViewById(R.id.tab_item_recyclerView);
+    protected void initView(Bundle savedInstanceState) {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
-        tabRecyclerViewAdapter = new TabRecyclerViewAdapter(R.layout.music, null);
-        recyclerView.setAdapter(tabRecyclerViewAdapter);
-        tabRecyclerViewAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        localRecyclerViewAdapter = new LocalRecyclerViewAdapter(R.layout.music, null);
+        recyclerView.setAdapter(localRecyclerViewAdapter);
+        localRecyclerViewAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 musics = (ArrayList<MusicInfo>) adapter.getData();
@@ -98,45 +114,13 @@ public class MusicFragment extends BaseFragment {
                 }
             }
         });
-        loadData();
-    }
-
-    private void loadData() {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> loadData");
-        Observable.fromIterable(MusicUtils.queryMusic(mContext, IConstants.START_FROM_LOCAL))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<MusicInfo>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(MusicInfo value) {
-                        tabRecyclerViewAdapter.addData(value);
-                        tabRecyclerViewAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
     }
 
     @Override
-    public void updateAdapter() {
-        super.updateAdapter();
-        loadData();
-
+    protected void loadData() {
+        Log.e(TAG, ">>>>>>>>>>>loadData: " + InjectorUtils.provideRepository(mContext).getAllMusicInfo());
     }
+
 
     @Override
     public void onDetach() {
@@ -176,5 +160,7 @@ public class MusicFragment extends BaseFragment {
         }
     }
 
+
 }
+
 

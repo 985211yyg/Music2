@@ -3,7 +3,6 @@ package com.example.yungui.music;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,17 +11,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import com.example.yungui.music.adapter.MainViewPagerAdapter;
 import com.example.yungui.music.base.BaseFragment;
-import com.example.yungui.music.fragment.FindFragment;
-import com.example.yungui.music.fragment.MusicBarFragment;
-import com.example.yungui.music.fragment.MyFragment;
+import com.example.yungui.music.fragment.MusicFindFragment;
+import com.example.yungui.music.fragment.MusicHallFragment;
+import com.example.yungui.music.fragment.MusicMyFragment;
 
 public class MainFragment extends BaseFragment {
+    public static final String Fragment_Tag = "MainFragment";
 
     private ViewPager viewPager;
     private MainViewPagerAdapter mainViewPagerAdapter;
@@ -55,7 +53,7 @@ public class MainFragment extends BaseFragment {
     }
 
     @Override
-    protected void initView() {
+    protected void initView(Bundle savedInstanceState) {
         toolbar = rootView.findViewById(R.id.toolbar);
         //toolbar与drawer联动
         ((MainActivity)getActivity()).initToolBarEvent(toolbar);
@@ -65,12 +63,17 @@ public class MainFragment extends BaseFragment {
         tabLayout = rootView.findViewById(R.id.tabLayout);
         viewPager = rootView.findViewById(R.id.main_ViewPager);
         mainViewPagerAdapter = new MainViewPagerAdapter(getActivity().getSupportFragmentManager(), tabText);
-        mainViewPagerAdapter.addFragment(MyFragment.newInstance());
-        mainViewPagerAdapter.addFragment(MusicBarFragment.newInstance());
-        mainViewPagerAdapter.addFragment(FindFragment.newInstance());
+        mainViewPagerAdapter.addFragment(MusicMyFragment.newInstance());
+        mainViewPagerAdapter.addFragment(MusicHallFragment.newInstance());
+        mainViewPagerAdapter.addFragment(MusicFindFragment.newInstance());
         viewPager.setAdapter(mainViewPagerAdapter);
-        viewPager.setCurrentItem(0);
+        viewPager.setCurrentItem(1);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
+    protected void loadData() {
+
     }
 
     @Override

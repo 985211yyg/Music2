@@ -20,7 +20,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.yungui.music.modle.SongPlayCount;
+import com.example.yungui.music.model.SongPlayCount;
 import com.example.yungui.music.provider.MusicPlaybackState;
 import com.example.yungui.music.provider.PlaylistInfo;
 import com.example.yungui.music.provider.PlaylistsManager;

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_10">
+
+    <ImageView
+        android:id="@+id/lrc_dialog_item_iv"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginBottom="@dimen/dp_4"
+        android:background="@drawable/lrc_bg"
+        android:padding="@dimen/dp_8"
+        android:src="@drawable/music" />
+
+    <TextView
+        android:id="@+id/lrc_dialog_item_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="歌词海报" />
+
+</LinearLayout>

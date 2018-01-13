@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LineLrcView" >
+        <attr name="lrcTextSize" format="dimension" />
+        <attr name="lrcColor" format="color" />
+        <attr name="duration" format="dimension" />
+    </declare-styleable>
+
+</resources>

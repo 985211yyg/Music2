@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
 
     <com.example.yungui.lrcview.view.LyricView
         android:id="@+id/lrcView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:saveEnabled="true"
+        app:lineSpace="@dimen/dp_20"
+        app:showIndicator="true"
+        app:normalColor="@color/barColor"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,19 +23,21 @@
         android:paddingRight="@dimen/dp_10">
 
         <Button
-            android:id="@+id/btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/microphone_btn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentStart="true"
-            android:background="@drawable/audiotrack" />
+            android:background="@drawable/microphone" />
 
         <Button
             android:id="@+id/lrc_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:background="@drawable/cricle_bg"
-            android:text="词" />
+            android:text="词"
+            android:textColor="@color/barColor" />
 
     </RelativeLayout>
 

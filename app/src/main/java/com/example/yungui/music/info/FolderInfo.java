@@ -18,6 +18,7 @@ public class FolderInfo implements Parcelable {
     public String folder_path;
     public String folder_sort;
     public int folder_count;
+
     // 用来创建自定义的Parcelable的对象
     public static Creator<FolderInfo> CREATOR = new Creator<FolderInfo>() {
 
@@ -53,4 +54,13 @@ public class FolderInfo implements Parcelable {
         dest.writeBundle(bundle);
     }
 
+    @Override
+    public String toString() {
+        return "FolderInfo{" +
+                "folder_name='" + folder_name + '\'' +
+                ", folder_path='" + folder_path + '\'' +
+                ", folder_sort='" + folder_sort + '\'' +
+                ", folder_count=" + folder_count +
+                '}';
+    }
 }

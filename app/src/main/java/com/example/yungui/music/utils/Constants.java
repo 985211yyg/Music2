@@ -3,6 +3,21 @@ package com.example.yungui.music.utils;
 import android.os.Environment;
 
 public class Constants {
+
+    public static final int SONG_LIST_HEADER = 11;
+    public static final int DAILY_SUGGEST_HEADER = 22;
+    public static final int NEW_CD_HEADER = 33;
+    public static final int RANKING_HEADER = 44;
+    public static final int SPECIAL_RADIO_HEADER = 55;
+    public static final int MUSICIAN_HEADER = 66;
+
+    public static final int SONG_LIST = 1;
+    public static final int DAILY_SUGGEST = 2;
+    public static final int NEW_CD = 3;
+    public static final int RANKING = 4;
+    public static final int SPECIAL_RADIO = 5;
+    public static final int MUSICIAN = 6;
+
     /**
      * SD卡路径
      */

@@ -25,7 +25,12 @@ public class FolderFragment extends BaseFragment {
     }
 
     @Override
-    protected void initView() {
+    protected void initView(Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    protected void loadData() {
 
     }
 }

@@ -175,7 +175,6 @@ public class PagingScrollHelper {
                     }
 
                 }
-
                 mOnFlingListener.onFling(vX, vY);
 
             }

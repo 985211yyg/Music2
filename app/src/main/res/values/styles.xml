@@ -6,17 +6,9 @@
         <item name="colorPrimary">@color/themeColor</item>
         <item name="colorPrimaryDark">@color/themeColor</item>
         <item name="colorAccent">@color/themeColor</item>
-
         <item name="android:windowContentTransitions">true</item>
-        <!--<item name="android:windowActivityTransitions">true</item>-->
-
-        <!--<item name="android:windowTranslucentStatus">false</item>-->
-        <!--<item name="android:windowTranslucentNavigation">false</item>-->
         <item name="android:windowAllowEnterTransitionOverlap">false</item>
         <item name="android:windowAllowReturnTransitionOverlap">false</item>
-
-        <!--<item name="android:windowEnterTransition">@transition/explode</item>-->
-        <!--<item name="android:windowExitTransition">@transition/explode</item>-->
 
 
     </style>
@@ -25,9 +17,16 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <!--<item name="android:windowAnimationStyle">@style/Transition</item>-->
-        <!--<item name="android:windowEnterTransition">@transition/transition_enter</item>-->
 
+    </style>
+
+    <!--透明背景和状态-->
+    <style name="Translucent" parent="AppTheme.NoActionBar">
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <!--<item name="android:windowTranslucentStatus">false</item>-->
+        <!--<item name="android:windowTranslucentNavigation">false</item>-->
+        <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
 
     </style>
 
@@ -45,7 +44,9 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:actionMenuTextColor">@android:color/white</item>
+    </style>
 
 
     <style name="NavigationHeaderTextStyle">
@@ -55,8 +56,6 @@
     </style>
 
     <style name="Text1">
-        <!--<item name="android:paddingTop">1dp</item>-->
-        <!--<item name="android:paddingBottom">1dp</item>-->
         <item name="android:paddingRight">4dp</item>
         <item name="android:paddingLeft">4dp</item>
         <item name="android:textColor">@android:color/white</item>
@@ -65,6 +64,23 @@
         <item name="android:layout_weight">1</item>
         <item name="android:layout_margin">5dp</item>
 
+    </style>
+
+    <style name="CategoryStyle" >
+        <item name="android:layout_margin">@dimen/dp_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/round_background_white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/dp_8</item>
+    </style>
+
+    <style name="CustomPopupDialog" parent="@style/AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:windowIsFloating">true</item>
     </style>
 
 </resources>

@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/themeColor"
     android:fitsSystemWindows="true"
     tools:context="com.example.yungui.music.fragment.SongDetailAlbumFragment">
 
@@ -87,7 +86,7 @@
         android:layout_height="200dp"
         android:layout_centerInParent="true"
         android:layout_margin="@dimen/dp_10"
-        android:src="@mipmap/timg"
+        android:src="@mipmap/images"
         android:transitionName="shareView"
         app:civ_border_overlay="true"
         app:civ_border_width="@dimen/dp_4" />
@@ -105,16 +104,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:src="@drawable/audiotrack" />
+            android:layout_centerInParent="true"
+            android:src="@drawable/q_play" />
 
-        <TextView
+        <com.example.yungui.linelrcview.LineLrcView
+            android:id="@+id/lineLrcView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="最近你变得很冷漠"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/sp_14" />
-
+            app:lrcColor="@color/barColor" />
     </RelativeLayout>
 
 

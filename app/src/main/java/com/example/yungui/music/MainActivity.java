@@ -1,56 +1,27 @@
 package com.example.yungui.music;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.PopupWindow;
 
-import com.example.yungui.music.adapter.MainViewPagerAdapter;
 import com.example.yungui.music.base.BaseActivity;
-import com.example.yungui.music.fragment.BottomControlBarFragment;
-import com.example.yungui.music.fragment.FindFragment;
-import com.example.yungui.music.fragment.MusicBarFragment;
-import com.example.yungui.music.fragment.MyFragment;
-import com.example.yungui.music.modle.Song;
-import com.example.yungui.music.service.MusicService;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
+    public static final String TAG = "MainActivity";
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
-    public static final String TAG = "MainActivity";
+    protected MediaControllerCompat controllerCompat;
 
-    @Override
-    protected void setTransition() {
-//        Transition explode = TransitionInflater.from(this).inflateTransition(R.transition.explode);
-//        getWindow().setEnterTransition(explode);
-//        getWindow().setReenterTransition(explode);
-//        getWindow().setExitTransition(explode);
-    }
 
     @Override
     protected int getLayoutID() {
@@ -64,6 +35,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     /**
      * activity是否支持toolbar
+     *
      * @return
      */
     @Override
@@ -77,9 +49,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         MainFragment mainFragment = MainFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.main_container, mainFragment,"mainFragment")
+                .add(R.id.main_container, mainFragment, MainFragment.Fragment_Tag)
                 .commit();
-
     }
 
     private void initDrawer() {

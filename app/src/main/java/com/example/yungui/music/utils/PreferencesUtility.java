@@ -22,12 +22,17 @@ import android.preference.PreferenceManager;
 
 public final class PreferencesUtility {
 
-    public static final String ARTIST_SORT_ORDER = "artist_sort_order";
+    public static final String ARTIST_SORT_ORDER = "artist_sort_order";//
     public static final String ARTIST_SONG_SORT_ORDER = "artist_song_sort_order";
     public static final String ARTIST_ALBUM_SORT_ORDER = "artist_album_sort_order";
     public static final String ALBUM_SORT_ORDER = "album_sort_order";
     public static final String ALBUM_SONG_SORT_ORDER = "album_song_sort_order";
     public static final String SONG_SORT_ORDER = "song_sort_order";
+
+    public static final String LRC_LAST_POSITION = "lrc_last_position";
+    public static final String LRC_FRONT_SIZE = "lrc_front_size";
+    public static final String LRC_FRONT_COLOR = "lrc_front_color";
+
     private static final String NOW_PLAYING_SELECTOR = "now_paying_selector";
     private static final String TOGGLE_ANIMATIONS = "toggle_animations";
     private static final String TOGGLE_SYSTEM_ANIMATIONS = "toggle_system_animations";
@@ -46,6 +51,7 @@ public final class PreferencesUtility {
 
     private static SharedPreferences mPreferences;
 
+    //构造方法
     public PreferencesUtility(final Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
@@ -57,10 +63,33 @@ public final class PreferencesUtility {
         return sInstance;
     }
 
+    public int getLrcFrontSize() {
+        return mPreferences.getInt(LRC_FRONT_SIZE, 14);
+    }
+
+    public void setLrcFrontSize(int lrcFrontSize) {
+        final SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(LRC_FRONT_SIZE, lrcFrontSize);
+        editor.commit();
+    }
+
+    public  int getLrcFrontColor() {
+        return mPreferences.getInt(LRC_FRONT_COLOR, 1);
+    }
+
+    public  void setLrcFrontColor(int  lrcFrontColor) {
+        final SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(LRC_FRONT_COLOR, lrcFrontColor);
+        editor.commit();
+    }
+
+    /**
+     * 退出时间
+     * @return
+     */
     public long lastExit(){
         return mPreferences.getLong("last_err_exit", 0);
     }
-
     public void setExitTime(){
         final SharedPreferences.Editor editor = mPreferences.edit();
         editor.putLong("last_err_exit", System.currentTimeMillis());
@@ -70,47 +99,59 @@ public final class PreferencesUtility {
     public boolean isCurrentDayFirst(String str){
         return mPreferences.getString(CURRENT_DATE, "").equals(str);
     }
-
     public void setCurrentDate(String str){
         final SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(CURRENT_DATE, str);
         editor.apply();
     }
 
+    /**
+     * 保存播放链接
+     * @param id
+     * @param link
+     */
     public void setPlayLink(long id, String link) {
         final SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(id + "", link);
         editor.apply();
     }
-
     public String getPlayLink(long id) {
         return mPreferences.getString(id + "", null);
     }
 
-    public void setItemPostion(String str) {
+    /**
+     * 记录item位置
+     * @param str
+     */
+    public void setItemPosition(String str) {
         final SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString("item_relative_position", str);
         editor.apply();
     }
-
     public String getItemPosition() {
         return mPreferences.getString("item_relative_position", "推荐歌单 最新专辑 主播电台");
     }
 
+    /**
+     * 下载音乐的字节数
+     * @param bit
+     */
     public void setDownMusicBit(int bit) {
         final SharedPreferences.Editor editor = mPreferences.edit();
         editor.putInt(DOWNMUSIC_BIT, bit);
         editor.apply();
     }
-
     public int getDownMusicBit() {
         return mPreferences.getInt(DOWNMUSIC_BIT, 192);
     }
 
+    /**
+     * 是否是最爱的播放列表
+     * @return
+     */
     public boolean getFavriateMusicPlaylist() {
         return mPreferences.getBoolean(FAVRIATE_MUSIC_PLAYLIST, false);
     }
-
     public void setFavriateMusicPlaylist(boolean b) {
         final SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(FAVRIATE_MUSIC_PLAYLIST, b);
@@ -171,10 +212,14 @@ public final class PreferencesUtility {
         return mPreferences.getString(THEME_PREFERNCE, "light");
     }
 
+
+    /**
+     * 保存开始页面的index
+     * @return
+     */
     public int getStartPageIndex() {
         return mPreferences.getInt(START_PAGE_INDEX, 0);
     }
-
     public void setStartPageIndex(final int index) {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -300,4 +345,5 @@ public final class PreferencesUtility {
     public int getFilterTime() {
         return mPreferences.getInt("filtertime", 60 * 1000);
     }
+
 }

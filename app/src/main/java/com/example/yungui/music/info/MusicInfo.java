@@ -3,6 +3,9 @@
  */
 package com.example.yungui.music.info;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,6 +13,8 @@ import android.os.Parcelable;
 /**
  * 音乐信息
  */
+
+@Entity(tableName = "musicInfo", primaryKeys = {"songId"})
 public class MusicInfo implements Parcelable {
 
     public static final String KEY_SONG_ID = "songID";//音乐id
@@ -31,17 +36,19 @@ public class MusicInfo implements Parcelable {
     /**
      * 数据库中的_id
      */
+    @ColumnInfo
     public long songId = -1;
     public int albumId = -1;
     public String albumName;
     public String albumData;
-    public int duration;
+    public String duration;
     public String musicName;
     public String artist;
     public long artistId;
     public String data;
     public String folder;
     public String lrc;
+    public String mimeType;
     public boolean islocal;
     public String sort;
     public int size;
@@ -61,7 +68,7 @@ public class MusicInfo implements Parcelable {
             music.songId = bundle.getLong(KEY_SONG_ID);
             music.albumId = bundle.getInt(KEY_ALBUM_ID);
             music.albumName = bundle.getString(KEY_ALBUM_NAME);
-            music.duration = bundle.getInt(KEY_DURATION);
+            music.duration = bundle.getString(KEY_DURATION);
             music.musicName = bundle.getString(KEY_MUSIC_NAME);
             music.artist = bundle.getString(KEY_ARTIST);
             music.artistId = bundle.getLong(KEY_ARTIST_ID);
@@ -93,7 +100,7 @@ public class MusicInfo implements Parcelable {
         bundle.putInt(KEY_ALBUM_ID, albumId);
         bundle.putString(KEY_ALBUM_NAME, albumName);
         bundle.putString(KEY_ALBUM_DATA, albumData);
-        bundle.putInt(KEY_DURATION, duration);
+        bundle.getString(KEY_DURATION, duration);
         bundle.putString(KEY_MUSIC_NAME, musicName);
         bundle.putString(KEY_ARTIST, artist);
         bundle.putLong(KEY_ARTIST_ID, artistId);
@@ -106,12 +113,117 @@ public class MusicInfo implements Parcelable {
         dest.writeBundle(bundle);
     }
 
+    public static Creator<MusicInfo> getCREATOR() {
+        return CREATOR;
+    }
+
     public int getFavorite() {
         return favorite;
     }
 
     public void setFavorite(int favorite) {
         this.favorite = favorite;
+    }
+
+    public int getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(int albumId) {
+        this.albumId = albumId;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public String getAlbumData() {
+        return albumData;
+    }
+
+    public void setAlbumData(String albumData) {
+        this.albumData = albumData;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public long getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(long artistId) {
+        this.artistId = artistId;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getFolder() {
+        return folder;
+    }
+
+    public void setFolder(String folder) {
+        this.folder = folder;
+    }
+
+    public boolean isIslocal() {
+        return islocal;
+    }
+
+    public void setIslocal(boolean islocal) {
+        this.islocal = islocal;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    @Override
+    public String toString() {
+        return "MusicInfo{" +
+                "songId=" + songId +
+                ", albumId=" + albumId +
+                ", albumName='" + albumName + '\'' +
+                ", albumData='" + albumData + '\'' +
+                ", duration=" + duration +
+                ", musicName='" + musicName + '\'' +
+                ", artist='" + artist + '\'' +
+                ", artistId=" + artistId +
+                ", data='" + data + '\'' +
+                ", folder='" + folder + '\'' +
+                ", lrc='" + lrc + '\'' +
+                ", islocal=" + islocal +
+                ", sort='" + sort + '\'' +
+                ", size=" + size +
+                ", favorite=" + favorite +
+                '}';
     }
 
 }

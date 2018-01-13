@@ -41,11 +41,11 @@ import java.util.WeakHashMap;
 
 /**
  * 音乐播放器。
- * 此类作为中间类，连接UI同时与服务结合，作为在沟通桥梁，
+ * 此类作为中间类，连接UI同时与服务结合，作为沟通桥梁，
  * 实现了ServiceConnection回调，
  * 又持有UI的ServiceConnection，
  */
-public class MusicPlayer {
+public class  MusicPlayer {
 
     private static final WeakHashMap<Context, ServiceBinder> mConnectionMap;
     private static final long[] sEmptyList;

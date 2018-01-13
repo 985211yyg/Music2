@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LyricView">
+        <attr name="lineHeight" format="dimension" />
+        <attr name="lineSpace" format="dimension" />
+        <attr name="normalColor" format="color" />
+        <attr name="heightLightColor" format="color" />
+        <attr name="textSize" format="dimension" />
+        <attr name="timeTextSize" format="dimension" />
+        <attr name="delayTime" format="float" />
+        <attr name="shaderWidth" format="dimension" />
+        <attr name="indicatiorSpace" format="dimension" />
+        <attr name="indicatorButtonRadius" format="dimension"></attr>
+        <attr name="indicatorMargin" format="dimension" />
+        <attr name="indicatorColor" format="color" />
+        <attr name="showIndicator" format="boolean" />
+
+    </declare-styleable>
+
+</resources>

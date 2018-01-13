@@ -19,5 +19,20 @@
     <string name="exit">退出</string>
     <string name="next_play">播放一首</string>
     <string name="play_null">播放列表为空</string>
+    <string name="more">更多</string>
+    <string name="singer">歌手</string>
+    <string name="rank">排行</string>
+    <string name="radio">电台</string>
+    <string name="hot">热门推荐</string>
+    <string name="sort">热门分类</string>
+    <string name="album">数字专辑</string>
+    <string name="list">歌单</string>
+    <string name="mv">MV</string>
+    <string name="local_sort">切换排序方式</string>
+    <string name="local_update_ql">升级音质</string>
+    <string name="local_scanning">扫描歌曲</string>
+    <string name="local_download_lrc">一键下载词图</string>
+    <string name="local_recover">本地歌曲恢复助手</string>
+    <string name="close">关闭</string>
 
 </resources>

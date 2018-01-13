@@ -80,6 +80,11 @@ public class ImageUtils {
         return new BitmapDrawable(context.getResources(), blurTemplate);
     }
 
+    /**
+     * 将drawable转换为bitmap
+     * @param drawable
+     * @return
+     */
     public static Bitmap getBitmapFromDrawable(Drawable drawable) {
         final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
         final int COLORDRAWABLE_DIMENSION = 2;

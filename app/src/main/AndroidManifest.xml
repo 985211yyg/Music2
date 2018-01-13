@@ -30,26 +30,48 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.SongDetailActivity"
             android:label="@string/title_activity_song_detail"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.LockActivity" />
-        <!--在新进程中单独运行，进程的名字是mian-->
+            android:launchMode="standard"
+            android:theme="@style/Translucent" />
+        <activity android:name=".activity.PopupItemActivity" />
+
+        <!--============================================================================-->
+        <!-- 在新进程中单独运行，进程的名字是mian -->
         <service
             android:name=".service.MediaService"
             android:process=":main" />
 
-        <receiver android:name=".service.MusicService$MusicReceiver">
+        <service
+            android:name=".service.MediaPlaybackService"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.example.yungui.music.UpdateStatus" />
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
+        <!--===========================================================-->
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
         <receiver android:name=".receiver.MediaButtonIntentReceiver" />
+        <receiver android:name=".activity.PopupItemActivity$MyMediaScannerReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_SCANNER_STARTED" />
+                <action android:name="android.intent.action.MEDIA_SCANNER_FINISHED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

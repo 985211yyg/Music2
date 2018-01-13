@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.coorchice.library.SuperTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/category"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_margin="@dimen/dp_2"
+    android:gravity="center"
+    android:text="背景音乐"
+    android:textColor="@android:color/black"
+    app:corner="@dimen/dp_8"
+    android:textSize="@dimen/sp_16"
+    app:solid="@color/barColor"
+    app:state_drawable="@drawable/timer"
+    app:state_drawable_height="40dp"
+    app:state_drawable_mode="leftTop"
+    app:state_drawable_padding_left="-13dp"
+    app:state_drawable_padding_top="-10dp"
+    app:state_drawable_width="40dp">
+
+</com.coorchice.library.SuperTextView>

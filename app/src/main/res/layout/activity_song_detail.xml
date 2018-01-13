@@ -5,14 +5,15 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="@mipmap/images"
     android:fitsSystemWindows="true"
     tools:context="com.example.yungui.music.activity.SongDetailActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+        android:id="@+id/song_detail_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
         android:layoutAnimation="@anim/layout_animation_top_enter"
         android:theme="@style/AppTheme.AppBarOverlay"
         android:transitionName="share"
@@ -22,7 +23,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
             android:gravity="center"
             app:layout_scrollFlags="scroll|enterAlways"
             app:navigationIcon="@drawable/fold"
@@ -35,7 +35,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:paddingRight="@dimen/dp_30"
-                android:text="你就不要想起我" />
+                android:text="00音乐" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
@@ -88,30 +88,31 @@
                     android:orientation="horizontal">
 
                     <com.example.yungui.timertextview.TimerTextView
-                        android:id="@+id/current_time"
+                        android:id="@+id/song_detail_current_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="00:00" />
+                        android:text="00:00"
+                        android:textColor="@color/barColor" />
 
-                    <SeekBar
+                    <com.example.yungui.music.widget.MediaSeekBar
                         android:id="@+id/song_detail_seekBar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="8"
                         android:clickable="true"
-                        android:progress="50"
                         android:progressBackgroundTint="@color/themeColor"
                         android:progressTint="@color/themeColor" />
 
                     <TextView
-                        android:id="@+id/total_time"
+                        android:id="@+id/song_detail_total_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="00:00" />
+                        android:text="00:00"
+                        android:textColor="@color/barColor" />
 
 
                 </LinearLayout>
@@ -133,11 +134,13 @@
                         android:src="@drawable/repeat" />
 
                     <ImageView
+                        android:id="@+id/song_detail_previous"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginLeft="@dimen/dp_10"
                         android:layout_marginRight="@dimen/dp_10"
                         android:layout_weight="1"
+                        android:clickable="true"
                         android:src="@drawable/previous" />
 
                     <com.example.yungui.music.widget.QQPlayButton
@@ -147,16 +150,19 @@
                         android:layout_marginLeft="@dimen/dp_10"
                         android:layout_marginRight="@dimen/dp_10"
                         android:layout_weight="1"
+                        android:clickable="true"
                         android:transitionName="song_detail_QQPlayButton"
                         app:Radius="25dp"
                         app:outBorderWidth="3dp" />
 
                     <ImageView
+                        android:id="@+id/song_detail_next"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginLeft="@dimen/dp_10"
                         android:layout_marginRight="@dimen/dp_10"
                         android:layout_weight="1"
+                        android:clickable="true"
                         android:src="@drawable/next" />
 
                     <ImageView

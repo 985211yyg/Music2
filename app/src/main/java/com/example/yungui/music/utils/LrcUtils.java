@@ -83,8 +83,8 @@ public class LrcUtils {
     private long covertTime(String time) {
         long minute = Long.parseLong(time.substring(1, 3));
         long second = Long.parseLong(time.substring(4, 6));
-        long millisecond = Long.parseLong(time.substring(7, 9));
-        return millisecond + second * 1000 + minute * 60 * 100;
+        long pointSecond = Long.parseLong(time.substring(7, 9));
+        return pointSecond*1000 + second * 1000 + minute * 60 * 100;
 
     }
 }

@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/local_more"
-        android:title="more"
-        app:showAsAction="never" />
+        android:id="@+id/menu_local_more"
+        android:icon="@drawable/more_white"
+        android:title=""
+        app:showAsAction="always" />
 </menu>

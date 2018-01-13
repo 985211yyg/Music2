@@ -4,13 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.example.yungui.music.fragment.AlbumFragment;
-import com.example.yungui.music.fragment.ArtistFragment;
-import com.example.yungui.music.fragment.FolderFragment;
-import com.example.yungui.music.fragment.MusicFragment;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yungui on 2017/10/22.

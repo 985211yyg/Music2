@@ -4,7 +4,7 @@
     android:interpolator="@android:interpolator/accelerate_decelerate">
     <slide android:slideEdge="top">
         <targets>
-            <target android:targetId="@id/appbar"></target>
+            <target android:targetId="@id/song_detail_appbar"></target>
             <target android:targetId="@android:id/statusBarBackground"></target>
         </targets>
     </slide>
@@ -15,7 +15,7 @@
     </slide>
     <fade>
         <targets>
-            <target android:targetId="@id/appbar"></target>
+            <target android:targetId="@id/song_detail_appbar"></target>
             <target android:targetId="@android:id/statusBarBackground"></target>
         </targets>
     </fade>

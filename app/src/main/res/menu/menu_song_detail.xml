@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.yungui.music.activity.SongDetailActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/song_detail_more"
+        android:icon="@drawable/more_white"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@string/more"
+        app:showAsAction="always" />
 </menu>

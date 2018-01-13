@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="bottom"
     android:background="@color/barColor"
     android:gravity="center_vertical">
-    <!--可以单位滑动的水平recycleView-->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/bottom_bar_recycleView"
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/bottom_bar_viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_toLeftOf="@+id/play_pause" />
 
     <com.example.yungui.music.widget.QQPlayButton
-        android:clickable="true"
         android:id="@+id/play_pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_toLeftOf="@+id/music_queue"
+        android:clickable="true"
         android:transitionName="share"
         app:outBorderWidth="2dp"
-        app:refreshColor="@color/barColor"/>
+        app:refreshColor="@color/barColor" />
 
     <ImageButton
         android:id="@+id/music_queue"

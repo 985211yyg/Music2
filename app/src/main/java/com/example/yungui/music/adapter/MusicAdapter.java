@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.example.yungui.music.modle.Song;
+import com.example.yungui.music.model.Song;
 
 import java.util.List;
 

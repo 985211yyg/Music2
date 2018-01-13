@@ -63,9 +63,8 @@ import android.widget.RemoteViews;
 import com.example.yungui.music.IMusicAidlInterface;
 import com.example.yungui.music.MainApplication;
 import com.example.yungui.music.R;
-import com.example.yungui.music.activity.LockActivity;
 import com.example.yungui.music.info.MusicInfo;
-import com.example.yungui.music.modle.SongPlayCount;
+import com.example.yungui.music.model.SongPlayCount;
 import com.example.yungui.music.permission.PermissionHelper;
 import com.example.yungui.music.provider.MusicPlaybackState;
 import com.example.yungui.music.provider.RecentStore;
@@ -643,11 +642,6 @@ public class MediaService extends Service {
             getLrc(mPlaylist.get(mPlayPos).mId);
         } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
 
-            if (isPlaying() && !mIsLocked) {
-                Intent lockscreen = new Intent(this, LockActivity.class);
-                lockscreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(lockscreen);
-            }
         } else if (LOCK_SCREEN.equals(action)) {
             mIsLocked = intent.getBooleanExtra("islock", true);
             L.D(D, TAG, "isloced = " + mIsLocked);
@@ -675,7 +669,7 @@ public class MediaService extends Service {
     };
 
     /**
-     * 更行通知栏
+     * 更xin通知栏
      */
     private void updateNotification() {
         final int newNotifyMode;

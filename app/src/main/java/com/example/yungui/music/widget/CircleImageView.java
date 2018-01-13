@@ -4,6 +4,7 @@ package com.example.yungui.music.widget;
  * Created by yungui on 2017/10/10.
  */
 
+import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -25,6 +26,7 @@ import android.net.Uri;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
+import android.view.animation.LinearInterpolator;
 
 import com.example.yungui.music.R;
 
@@ -33,7 +35,7 @@ import com.example.yungui.music.R;
  * updateShaderMatrix保证图片损失度最小和始终绘制图片正中央的那部分
  * 作者思路是画圆用渲染器位图填充，而不是把Bitmap重绘切割成一个圆形图片。
  */
-public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
+public class CircleImageView extends android.support.v7.widget.AppCompatImageView implements ObjectAnimator.AnimatorUpdateListener {
     //缩放类型
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
@@ -67,21 +69,27 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
     private float mDrawableRadius;// 图片半径
     private float mBorderRadius;// 带边框的的图片半径
 
+    private float currentRotateValue;//当前旋转的值
+    private ObjectAnimator objectAnimator;
+
     private ColorFilter mColorFilter;
     //初始false
     private boolean mReady;
     private boolean mSetupPending;
     private boolean mBorderOverlay;
+
     //构造函数
     public CircleImageView(Context context) {
         super(context);
         init();
     }
+
     //构造函数
     public CircleImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
         init();
     }
+
     /**
      * 构造函数
      */
@@ -97,9 +105,9 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
         mBorderOverlay = a.getBoolean(R.styleable.CircleImageView2_border_overlay, DEFAULT_BORDER_OVERLAY);
         //调用 recycle() 回收TypedArray
         a.recycle();
-        System.out.println("CircleImageView -- 构造函数");
         init();
     }
+
     /**
      * 作用就是保证第一次执行setup函数里下面代码要在构造函数执行完毕时调用
      */
@@ -113,16 +121,20 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
             setup();
             mSetupPending = false;
         }
+        //初始化旋转动画
+        initRotationAnimation();
     }
 
     /**
      * 返回缩放类型
+     *
      * @return
      */
     @Override
     public ScaleType getScaleType() {
         return SCALE_TYPE;
     }
+
     /**
      * 这里明确指出 此种imageview 只支持CENTER_CROP 这一种属性
      *
@@ -137,6 +149,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
 
     /**
      * 明确指出不支持调整边界
+     *
      * @param adjustViewBounds
      */
 
@@ -149,6 +162,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
 
     /**
      * 最定义关键
+     *
      * @param canvas
      */
     @Override
@@ -218,6 +232,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
      * 以下四个函数都是
      * 复写ImageView的setImageXxx()方法
      * 注意这个函数先于构造函数调用之前调用
+     *
      * @param bm
      */
     @Override
@@ -260,21 +275,66 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
         invalidate();
     }
 
-    public void startRotate() {
-        getRotationAnimator().start();
+    public void setCurrentRotateValue(float currentRotateValue) {
+        this.currentRotateValue = currentRotateValue;
+        setRotation(currentRotateValue);
     }
-    public void stopRotate() {
-        getRotationAnimator().cancel();
+
+    public float getCurrentRotateValue() {
+        return currentRotateValue;
     }
-    private ObjectAnimator getRotationAnimator() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "rotation", 0, 360);
+
+    public void startAndPause() {
+        if (objectAnimator != null) {
+            if (objectAnimator.isRunning()) {
+                objectAnimator.pause();
+            } else if (objectAnimator.isPaused()) {
+                objectAnimator.resume();
+            } else {
+                objectAnimator.start();
+            }
+        }
+    }
+
+    private void initRotationAnimation() {
+        objectAnimator = ObjectAnimator.ofFloat(this, "rotation", 0, 360);
         objectAnimator.setRepeatCount(ValueAnimator.INFINITE);
         objectAnimator.setRepeatMode(ValueAnimator.RESTART);
-        objectAnimator.setDuration(15000);
-        return objectAnimator;
+        objectAnimator.setDuration(30000);
+        objectAnimator.setInterpolator(new LinearInterpolator());
+        objectAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        //数值更新动画，获取旋转值
+        objectAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                currentRotateValue = (float) animation.getAnimatedValue();
+            }
+        });
     }
+
     /**
      * Drawable转Bitmap
+     *
      * @param drawable
      * @return
      */
@@ -290,7 +350,6 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
 
         try {
             Bitmap bitmap;
-
             if (drawable instanceof ColorDrawable) {
                 bitmap = Bitmap.createBitmap(COLORDRAWABLE_DIMENSION,
                         COLORDRAWABLE_DIMENSION, BITMAP_CONFIG);
@@ -307,6 +366,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
             return null;
         }
     }
+
     /**
      * 这个函数很关键，进行图片画笔边界画笔(Paint)一些重绘参数初始化：
      * 构建渲染器BitmapShader用Bitmap来填充绘制区域,设置样式以及内外圆半径计算等，
@@ -360,6 +420,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
         //手动触发ondraw()函数 完成最终的绘制
         invalidate();
     }
+
     /**
      * 这个函数为设置BitmapShader的Matrix参数，设置最小缩放比例，平移参数。
      * 作用：保证图片损失度最小和始终绘制图片正中央的那部分
@@ -375,7 +436,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
               ----  =  -----
                mDW     mDH
          */
-        if (mBitmapWidth * mDrawableRect.height() >  mBitmapHeight*mDrawableRect.width() ) {
+        if (mBitmapWidth * mDrawableRect.height() > mBitmapHeight * mDrawableRect.width()) {
             //y轴缩放 x轴平移 使得图片的y轴方向的边的尺寸缩放到图片显示区域（mDrawableRect）一样）
             scale = mDrawableRect.height() / (float) mBitmapHeight;
             dx = (mDrawableRect.width() - mBitmapWidth * scale) * 0.5f;
@@ -392,5 +453,9 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
         mBitmapShader.setLocalMatrix(mShaderMatrix);
     }
 
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+
+    }
 }
 

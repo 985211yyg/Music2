@@ -10,4 +10,14 @@
     <color name="barColor">#f5f5f5</color>
     <color name="transparentColor">#c8767676</color>
     <color name="transparentBackground">#c83c2f2f</color>
+
+
+    <color name="green">#02c751</color>
+    <color name="blue">#71cef5</color>
+    <color name="yellow">#f9d753</color>
+    <color name="pink">#ff5ea6</color>
+    <color name="red">#e44534</color>
+
+    <color name="notification_bg">@android:color/holo_red_light</color>
+
 </resources>

@@ -56,7 +56,6 @@ public class QQPlayButton extends ToggleButton {
     private float startRefreshAngle = 0.0f;
 
     private boolean refreshing;
-    private boolean isPlay;
     //定义画笔
     private Paint outBorderPaint;//外环画笔
     private Paint pausePaint;//暂停按钮画笔
@@ -64,7 +63,6 @@ public class QQPlayButton extends ToggleButton {
     private Paint progressPaint;//画纸进度的画笔
     private Paint refreshPaint;//刷新画笔
     private float cx, cy;
-    private OnPlayOrPauseListener playOrPauseListener;
 
     public QQPlayButton(Context context) {
         this(context, null);
@@ -80,19 +78,6 @@ public class QQPlayButton extends ToggleButton {
         initAttr(context, attrs);
         initVar();
         this.setChecked(true);
-        //没有使用toggleButton的checkChangeListener,不便于控制播放状态与图标联动
-        this.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (playOrPauseListener != null) {
-                    if (isChecked()) {
-                        playOrPauseListener.pause();
-                    } else {
-                        playOrPauseListener.play();
-                    }
-                }
-            }
-        });
     }
 
     private void initAttr(Context context, AttributeSet attrs) {
@@ -249,14 +234,6 @@ public class QQPlayButton extends ToggleButton {
         return valueAnimator;
     }
 
-    /**
-     * 对外的监听接口
-     *
-     * @param playOrPauseListener
-     */
-    public void setOnPlayAndPauseListener(OnPlayOrPauseListener playOrPauseListener) {
-        this.playOrPauseListener = playOrPauseListener;
-    }
 
     public float getProgress() {
         return progress;
@@ -293,12 +270,6 @@ public class QQPlayButton extends ToggleButton {
     public void UpdateStatue(boolean isPlay) {
         this.setChecked(!isPlay);
         postInvalidate();
-    }
-
-    public interface OnPlayOrPauseListener {
-        void play();
-
-        void pause();
     }
 
 }

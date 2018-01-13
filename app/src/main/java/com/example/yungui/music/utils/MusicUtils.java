@@ -14,7 +14,6 @@ import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files.FileColumns;
 
 import com.example.yungui.music.Interface.IConstants;
-import com.example.yungui.music.R;
 import com.example.yungui.music.info.AlbumInfo;
 import com.example.yungui.music.info.ArtistInfo;
 import com.example.yungui.music.info.FolderInfo;
@@ -25,7 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**查询本地音乐的信息
+/**
+ * 查询本地音乐的信息
  * 查询各主页信息，获取封面图片等
  */
 public class MusicUtils implements IConstants {
@@ -33,16 +33,22 @@ public class MusicUtils implements IConstants {
     public static final int FILTER_SIZE = 1 * 1024 * 1024;// 1MB
     public static final int FILTER_DURATION = 1 * 60 * 1000;// 1分钟
 
+    public static final int SONG = 1;
+    public static final int MV = 2;
+    public static final int DJRADIO = 3;
 
+    //查询的数据
     private static String[] proj_music = new String[]{
-            Media._ID,
-            Media.TITLE,
-            Media.DATA,
-            Media.ALBUM_ID,
-            Media.ALBUM,
-            Media.ARTIST,
-            Media.ARTIST_ID,
-            Media.DURATION, Media.SIZE};
+            Media._ID,//id
+            Media.TITLE,//歌名
+            Media.DATA,//文件路径
+            Media.ALBUM_ID,//专辑id
+            Media.ALBUM,//专辑名字
+            Media.ARTIST,//歌手
+            Media.ARTIST_ID,//歌手id
+            Media.DURATION,//时长
+            //大小
+            Media.SIZE};
 
     private static String[] proj_album = new String[]{
             Albums._ID,
@@ -67,8 +73,10 @@ public class MusicUtils implements IConstants {
      */
     public static List<FolderInfo> queryFolder(Context context) {
 
-        Uri uri = MediaStore.Files.getContentUri("external");
+        Uri uri = Media.EXTERNAL_CONTENT_URI;
+
         ContentResolver cr = context.getContentResolver();
+        //编写查询条件
         StringBuilder mSelection = new StringBuilder(FileColumns.MEDIA_TYPE
                 + " = " + FileColumns.MEDIA_TYPE_AUDIO + " and " + "("
                 + FileColumns.DATA + " like'%.mp3' or " + Media.DATA
@@ -144,10 +152,16 @@ public class MusicUtils implements IConstants {
         return queryMusic(context, null, from);
     }
 
-
+    /**
+     * @param context
+     * @param id      歌曲id
+     * @param from    从哪一个界面进来的
+     * @return
+     */
     public static ArrayList<MusicInfo> queryMusic(Context context, String id, int from) {
-
+        //外部存储?
         Uri uri = Media.EXTERNAL_CONTENT_URI;
+        //获取内容解析器
         ContentResolver cr = context.getContentResolver();
 
         StringBuilder select = new StringBuilder(" 1=1 and title != ''");
@@ -156,24 +170,28 @@ public class MusicUtils implements IConstants {
         select.append(" and " + Media.DURATION + " > " + FILTER_DURATION);
 
         String selectionStatement = "is_music=1 AND title != ''";
+        //获取存储的排序顺序
         final String songSortOrder = PreferencesUtility.getInstance(context).getSongSortOrder();
 
 
         switch (from) {
+            //本地
             case START_FROM_LOCAL:
                 ArrayList<MusicInfo> list3 = getMusicListCursor(cr.query(uri, proj_music,
-                        select.toString(), null,
-                        songSortOrder));
+                        select.toString(), null, songSortOrder));
                 return list3;
+            //歌手
             case START_FROM_ARTIST:
                 select.append(" and " + Media.ARTIST_ID + " = " + id);
                 return getMusicListCursor(cr.query(uri, proj_music, select.toString(), null,
                         PreferencesUtility.getInstance(context).getArtistSongSortOrder()));
+            //专辑
             case START_FROM_ALBUM:
                 select.append(" and " + Media.ALBUM_ID + " = " + id);
                 return getMusicListCursor(cr.query(uri, proj_music,
                         select.toString(), null,
                         PreferencesUtility.getInstance(context).getAlbumSongSortOrder()));
+            //文件夹
             case START_FROM_FOLDER:
                 ArrayList<MusicInfo> list1 = new ArrayList<>();
                 ArrayList<MusicInfo> list = getMusicListCursor(cr.query(Media.EXTERNAL_CONTENT_URI, proj_music,
@@ -203,21 +221,8 @@ public class MusicUtils implements IConstants {
         }
         selection.append(")");
 
-        //sqlite 不支持decode
-
-//        final StringBuilder order = new StringBuilder();
-//        order.append("DECODE(" +MediaStore.Audio.Media._ID +",");
-//        for (int i = 0; i < id.length; i++) {
-//            order.append(id[i]);
-//            order.append(",");
-//            order.append(i);
-//            if (i < id.length - 1) {
-//                order.append(",");
-//            }
-//        }
-//        order.append(")");
-
-        Cursor cursor = (context.getContentResolver().query(Media.EXTERNAL_CONTENT_URI, proj_music,
+        Cursor cursor = (context.getContentResolver().query(Media.EXTERNAL_CONTENT_URI,
+                proj_music,
                 selection.toString(),
                 null, null));
         if (cursor == null) {
@@ -254,7 +259,7 @@ public class MusicUtils implements IConstants {
         return musicList;
     }
 
-
+    //通过游标获取歌曲信息列表
     public static ArrayList<MusicInfo> getMusicListCursor(Cursor cursor) {
         if (cursor == null) {
             return null;
@@ -270,8 +275,8 @@ public class MusicUtils implements IConstants {
             music.albumName = cursor.getString(cursor
                     .getColumnIndex(Albums.ALBUM));
             music.albumData = getAlbumArtUri(music.albumId) + "";
-            music.duration = cursor.getInt(cursor
-                    .getColumnIndex(Media.DURATION));
+            music.duration = String.valueOf(cursor.getInt(cursor
+                    .getColumnIndex(Media.DURATION)));
             music.musicName = cursor.getString(cursor
                     .getColumnIndex(Media.TITLE));
             music.artist = cursor.getString(cursor
@@ -445,8 +450,8 @@ public class MusicUtils implements IConstants {
             music.albumName = cursor.getString(cursor
                     .getColumnIndex(Albums.ALBUM));
             music.albumData = getAlbumArtUri(music.albumId) + "";
-            music.duration = cursor.getInt(cursor
-                    .getColumnIndex(Media.DURATION));
+            music.duration = String.valueOf(cursor.getInt(cursor
+                    .getColumnIndex(Media.DURATION)));
             music.musicName = cursor.getString(cursor
                     .getColumnIndex(Media.TITLE));
             music.size = cursor.getInt(cursor.getColumnIndex(Media.SIZE));
@@ -478,6 +483,27 @@ public class MusicUtils implements IConstants {
 //        return String.format(durationFormat, hours, mins, secs);
 //    }
 
+    public static int AnalyzeUrl(String url) {
+        if (url.contains("song")) {
+            return SONG;
+        } else if (url.contains("mv")) {
+            return MV;
+        } else if (url.contains("djradio")) {
+            return DJRADIO;
+        }
+        return 0;
+    }
+
+    /**
+     * 使用jsoup解析网易云音乐播单主页中的播单
+     *
+     * @return
+     */
+    public static List<String> getPlayList() {
+        List<String> playList = new ArrayList<>();
+
+        return null;
+    }
 
 }
 
