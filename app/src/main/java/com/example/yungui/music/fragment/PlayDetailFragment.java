@@ -96,14 +96,16 @@ public class PlayDetailFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
-        seekBar.disconnectController();
+        if (seekBar != null) {
+            seekBar.disconnectController();
+        }
         qqPlayButton.disconnectController();
         if (mediaControllerCompat != null) {
             mediaControllerCompat.unregisterCallback(mCallback);
             mediaControllerCompat = null;
             mCallback = null;
         }
+        super.onDestroyView();
     }
 
     public static PlayDetailFragment newInstance() {

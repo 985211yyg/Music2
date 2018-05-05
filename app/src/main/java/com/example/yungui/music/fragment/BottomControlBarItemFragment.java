@@ -66,7 +66,6 @@ public class BottomControlBarItemFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         if (mMediaControllerCompat != null) {
             mMediaControllerCompat = null;
             circleImageView.disconnectController();
@@ -74,6 +73,7 @@ public class BottomControlBarItemFragment extends BaseFragment {
         if (musicInfo != null) {
             musicInfo = null;
         }
+        super.onDestroyView();
     }
 
     public BottomControlBarItemFragment() {

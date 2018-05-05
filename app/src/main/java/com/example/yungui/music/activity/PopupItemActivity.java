@@ -123,7 +123,8 @@ public class PopupItemActivity extends BaseActivity {
                             cancelable = false;
                         }
                         scanning.setText("取消");
-                        musicScanner.scanning(new File(FileUtils.getExtSDCardPath(PopupItemActivity.this)[1]), "audio/*", new MusicScanner.OnScannerListener() {
+                        musicScanner.scanning(new File(FileUtils.getExtSDCardPath(PopupItemActivity.this)[1]),
+                                "audio/*", new MusicScanner.OnScannerListener() {
                             @Override
                             public void scanning(String path, Uri uri) {
                                 show.post(() -> {
