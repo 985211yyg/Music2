@@ -1,22 +1,21 @@
 # Music
 **截图**
-<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/main.png?raw=true" width="40%" height="50%" align="left">
+<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/main.png?raw=true" width="40%" height="50%" align="center">
 
-<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/detail.png?raw=true" width="40%" height="50%" align="right">
+<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/detail.png?raw=true" width="40%" height="50%" align="center">
 
 <img src="https://github.com/985211yygg/Music2/blob/master/screenshots/detail_lrc.png?raw=true" width="40%" height="50%" align="center">
 
 
 **录屏**
 
-<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/1.gif?raw=true" width="40%" height="50%" align="left">
+<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/1.gif?raw=true" width="40%" height="50%" align="center">
 
-<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/2.gif?raw=true" width="40%" height="50%" align="right">
+<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/2.gif?raw=true" width="40%" height="50%" align="center">
 
-<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/3.gif?raw=true" width="40%" height="50%" align="left">
+<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/3.gif?raw=true" width="40%" height="50%" align="center">
 
-<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/4.gif?raw=true" width="40%" height="50%" align="right">
-https://github.com/985211yygg/Music2/blob/master/screenshots/4.gif?raw=true
+<img src="https://github.com/985211yygg/Music2/blob/master/screenshots/4.gif?raw=true" width="40%" height="50%" align="center">
 
 Music是一款模仿QQ音乐的音乐播放器，应用在单独的服务进程中控制音乐播放，目前以实现功能如下：
 - 通过耳机和通知栏快捷控制音乐播放;
