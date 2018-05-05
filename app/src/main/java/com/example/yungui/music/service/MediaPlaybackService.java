@@ -1,9 +1,10 @@
 package com.example.yungui.music.service;
 
-import android.app.Application;
 import android.app.Notification;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -15,10 +16,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.example.yungui.music.MainApplication;
-import com.example.yungui.music.model.Music;
-import com.example.yungui.music.model.MusicLibrary;
-import com.example.yungui.music.utils.AppExecutors;
+import com.example.yungui.music.dataUtils.MusicLibrary;
 import com.example.yungui.music.widget.MediaNotificationManager;
 
 import java.util.ArrayList;
@@ -79,7 +77,9 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
     @Override
     public void onDestroy() {
         mMediaNotificationManager.onDestroy();
-        playerBack.stop();
+        if (playerBack.isPlaying()) {
+            playerBack.stop();
+        }
         mMediaSession.release();
         Log.e(TAG, "onDestroy: MediaPlayBackService stopped, and MediaSession released");
 
@@ -96,7 +96,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         return new BrowserRoot(Root, null);
     }
 
-    // 装载内容 回调MediaBrowserCompat.SubscriptionCallback 讲数据传出去，MediaController调用MediaSession onAddQueueItem增加数据
+    // !!!!装载内容 回调MediaBrowserCompat.SubscriptionCallback 讲数据传出去，MediaController调用MediaSession onAddQueueItem增加数据
     @Override
     public void onLoadChildren(@NonNull String parentId,
                                @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
@@ -128,7 +128,6 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         public void onRemoveQueueItem(MediaDescriptionCompat description) {
             mPlayLists.remove(new MediaSessionCompat.QueueItem(description, description.hashCode()));
             mQueueIndex = (mPlayLists.isEmpty()) ? -1 : mQueueIndex;
-
         }
 
         //播放，并且开启服务开启通知栏
@@ -145,6 +144,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
             //播放音乐
             playerBack.playFromMedia(mPreparedMediaMetadata);
         }
+
 
         //准备播放,获取元数据，激活MediaSession
         @Override
@@ -166,13 +166,15 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
         @Override
         public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
-            Log.e(TAG, "onMediaButtonEvent: " + mediaButtonEvent.getAction().toString());
-            return true;
+            return false;
         }
 
+        //调到指定位置的item
         @Override
         public void onSkipToQueueItem(long id) {
-
+            mQueueIndex = (int) id;
+            mPreparedMediaMetadata = null;
+            onPlay();
         }
 
         @Override
@@ -195,6 +197,20 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
             mQueueIndex = mQueueIndex > 0 ? mQueueIndex - 1 : mPlayLists.size() - 1;
             mPreparedMediaMetadata = null;
             onPlay();
+
+        }
+
+        @Override
+        public void onPlayFromMediaId(String mediaId, Bundle extras) {
+
+        }
+
+        @Override
+        public void onPlayFromSearch(String query, Bundle extras) {
+        }
+
+        @Override
+        public void onPlayFromUri(Uri uri, Bundle extras) {
 
         }
 
@@ -227,11 +243,27 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
         }
 
+        @Override
+        public void onPrepareFromMediaId(String mediaId, Bundle extras) {
+            super.onPrepareFromMediaId(mediaId, extras);
+        }
 
+        @Override
+        public void onPrepareFromSearch(String query, Bundle extras) {
+            super.onPrepareFromSearch(query, extras);
+        }
+
+        @Override
+        public void onPrepareFromUri(Uri uri, Bundle extras) {
+            super.onPrepareFromUri(uri, extras);
+        }
     }
 
     /**
-     * MediaPlay的回调
+     * ============MediaPlay的反馈=========================
+     * 1、播放完成
+     * 2、播放状态改变
+     * 3、缓冲进度
      */
     public class MediaPlayerListener extends PlaybackInfoListener {
         private final ServicesManager servicesManager;
@@ -244,13 +276,13 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         @Override
         public void OnPlayCompleted() {
             Log.e(TAG, "OnPlayCompleted: 播放完成！");
-            mMediaSessionCallback.onSkipToNext();
+            mMediaSession.getController().getTransportControls().skipToNext();
         }
 
         //播放状态改变你回调
         @Override
         public void OnPlaybackInfoChanged(PlaybackStateCompat stateCompat) {
-            // Report the state to the MediaSession.
+            // 会擦混播放状态给 MediaSession. 需要包含播放暂停等状态，以及播放的位置
             mMediaSession.setPlaybackState(stateCompat);
             switch (stateCompat.getState()) {
                 case PlaybackStateCompat.STATE_PLAYING:
@@ -262,8 +294,20 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                 case PlaybackStateCompat.STATE_STOPPED:
                     servicesManager.moveServiceOutOfStartedState(stateCompat);
                     break;
+                    //处于缓冲状态，需要传出春冲进度
+                case PlaybackStateCompat.STATE_BUFFERING:
+                    servicesManager.moveServiceToStartedState(stateCompat);
+                    break;
+
             }
 
+        }
+
+        @Override
+        public void OnBufferingUpdate(int percent) {
+            PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder();
+            stateBuilder.setState(PlaybackStateCompat.STATE_BUFFERING, 1, SystemClock.elapsedRealtime());
+            stateBuilder.setBufferedPosition(percent);
         }
     }
 
@@ -274,7 +318,6 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
         private void moveServiceToStartedState(PlaybackStateCompat stateCompat) {
             Log.d(TAG, ">>>>>>>>>moveServiceToStartedState: ");
-
             Notification notification = mMediaNotificationManager
                     .getNotification(playerBack.getCurrentMedia(),
                             stateCompat, mMediaSession);

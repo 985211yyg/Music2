@@ -4,12 +4,12 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/themeColor</item>
+        <!--状态栏颜色-->
         <item name="colorPrimaryDark">@color/themeColor</item>
         <item name="colorAccent">@color/themeColor</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">false</item>
         <item name="android:windowAllowReturnTransitionOverlap">false</item>
-
 
     </style>
 
@@ -22,11 +22,11 @@
 
     <!--透明背景和状态-->
     <style name="Translucent" parent="AppTheme.NoActionBar">
-        <item name="colorPrimaryDark">@android:color/transparent</item>
-        <!--<item name="android:windowTranslucentStatus">false</item>-->
-        <!--<item name="android:windowTranslucentNavigation">false</item>-->
-        <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
-        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
+        <!--4.4使用-->
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/themeColor</item>
 
     </style>
 
@@ -66,7 +66,7 @@
 
     </style>
 
-    <style name="CategoryStyle" >
+    <style name="CategoryStyle">
         <item name="android:layout_margin">@dimen/dp_2</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/black</item>
@@ -81,6 +81,10 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <style name="MaterialAnimations" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
 </resources>

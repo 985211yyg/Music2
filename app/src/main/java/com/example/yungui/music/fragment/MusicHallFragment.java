@@ -3,13 +3,19 @@ package com.example.yungui.music.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.alibaba.android.vlayout.DelegateAdapter;
 import com.alibaba.android.vlayout.VirtualLayoutManager;
@@ -37,7 +43,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.ButterKnife;
+import butterknife.BindView;
 import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -59,9 +65,25 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter.OnItemChildClickListener, MyDelegateAdapter.OnItemClickListener {
     public static final String TAG = MusicHallFragment.class.getSimpleName();
     public static final String Fragment_Tag = "MusicHallFragment";
-    private MZBannerView<String> bannerView;
+    @BindView(R.id.bannerView)
+    MZBannerView mBannerView;
+    @BindView(R.id.hall_singer)
+    LinearLayout mHallSinger;
+    @BindView(R.id.hall_ranking)
+    LinearLayout mHallRanking;
+    @BindView(R.id.hall_radio)
+    LinearLayout mHallRadio;
+    @BindView(R.id.hall_songList)
+    LinearLayout mHallSongList;
+    @BindView(R.id.hall_mv)
+    LinearLayout mHallMv;
+    @BindView(R.id.hall_album)
+    LinearLayout mHallAlbum;
+    @BindView(R.id.music_hall_recyclerView)
+    RecyclerView mMusicHallRecyclerView;
+
     private List<String> imgUrls = new ArrayList<>();
-    private RecyclerView recyclerView;
+
     private MyDelegateAdapter adapter_Song_List,
             adapter_Daily_Suggest,
             adapter_New_CD,
@@ -80,6 +102,23 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
     private Disposable disposable;
     private String data;
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mBannerView.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mBannerView.pause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
     public static MusicHallFragment newInstance() {
         MusicHallFragment fragment = new MusicHallFragment();
         Bundle args = new Bundle();
@@ -94,22 +133,19 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
-        bannerView = rootView.findViewById(R.id.bannerView);
-        recyclerView = rootView.findViewById(R.id.music_hall_recyclerView);
         imgUrls.add(NetConstant.BANNER_IMG_1);
         imgUrls.add(NetConstant.BANNER_IMG_2);
         imgUrls.add(NetConstant.BANNER_IMG_3);
         imgUrls.add(NetConstant.BANNER_IMG_4);
         imgUrls.add(NetConstant.BANNER_IMG_5);
 
-        bannerView.setPages(imgUrls, new MZHolderCreator() {
+        mBannerView.setPages(imgUrls, new MZHolderCreator() {
             @Override
             public MZViewHolder createViewHolder() {
                 return new MyMZViewHolder();
             }
         });
-        bannerView.setBannerPageClickListener(new MZBannerView.BannerPageClickListener() {
+        mBannerView.setBannerPageClickListener(new MZBannerView.BannerPageClickListener() {
             @Override
             public void onPageClick(View view, int i) {
                 switch (MusicUtils.AnalyzeUrl(NetConstant.BANNER_ITEM_HREF[i])) {
@@ -130,12 +166,12 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
 
 
         VirtualLayoutManager virtualLayoutManager = new VirtualLayoutManager(mContext);
-        recyclerView.setLayoutManager(virtualLayoutManager);
+        mMusicHallRecyclerView.setLayoutManager(virtualLayoutManager);
 
         //歌单推荐
         LinearLayoutHelper song_list_header = new LinearLayoutHelper();
         adapter_Song_List_Header = new MyDelegateAdapter(mContext, song_list_header, 1, null, Constants.SONG_LIST_HEADER);
-        PlayListBean  playListBean=new PlayListBean();
+        PlayListBean playListBean = new PlayListBean();
         ArrayList<PlayListBean> beans1 = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
             beans1.add(playListBean);
@@ -179,7 +215,6 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
         ColumnLayoutHelper special_radio = new ColumnLayoutHelper();
         special_radio.setItemCount(3);
         special_radio.setMargin(4, 0, 4, 0);
-
         MusicBean musicBean4 = new MusicBean();
         ArrayList<MusicBean> beans4 = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
@@ -210,6 +245,8 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
         LinearLayoutHelper musician = new LinearLayoutHelper(1, 5);
         musician.setMarginLeft(1);
         adapter_Musician = new MyDelegateAdapter(mContext, musician, 5, beans6, Constants.MUSICIAN);
+
+
         adapters.add(adapter_Song_List_Header);
         adapters.add(adapter_Song_List);
         adapters.add(adapter_Daily_Suggest_Header);
@@ -231,8 +268,9 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
         DelegateAdapter delegateAdapter = new DelegateAdapter(virtualLayoutManager);
         //添加多个adapter
         delegateAdapter.setAdapters(adapters);
-        recyclerView.setAdapter(delegateAdapter);
+        mMusicHallRecyclerView.setAdapter(delegateAdapter);
     }
+
 
     /**
      * 加载数据
@@ -247,7 +285,7 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
                     @Override
                     public void accept(List<PlayList> playLists) throws Exception {
                         for (PlayList playList : playLists) {
-                            Log.e(TAG, "accept: " + playList.getLink());
+
                         }
 
                     }
@@ -269,7 +307,6 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
 
                                         @Override
                                         public void onNext(PlayListBean value) {
-                                            Log.e(TAG, "onNext: " + value);
                                             playListBeans.add(value);
                                         }
 
@@ -305,25 +342,24 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
 
     }
 
-    @OnClick(R.id.hall_singer)
-    public void HallSinger(View view) {
+    @Override
+    public void onPlayBackServiceConnected(@NonNull MediaControllerCompat mediaControllerCompat) {
 
     }
 
-    @OnClick(R.id.hall_ranking)
-    public void HallRanking(View view) {
+    @Override
+    public void onMetadataChanged(MediaMetadataCompat mediaMetadataCompat) {
 
     }
 
-    @OnClick(R.id.hall_radio)
-    public void HallRadio(View view) {
+    @Override
+    public void onPlaybackStateChanged(PlaybackStateCompat playbackStateCompat) {
 
     }
 
-    @OnClick(R.id.hall_songList)
-    public void HallSongList(View view) {
-        //替换猪fragment
-        addToMainContent(MusicHallCategoryFragment.newInstance(data), MusicHallCategoryFragment.Fragment_Tag, MainFragment.Fragment_Tag);
+    @Override
+    public void onMediaItemsLoaded(List<MediaBrowserCompat.MediaItem> mediaItems) {
+
     }
 
     /**
@@ -346,28 +382,8 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
                 .commit();
     }
 
-    @OnClick(R.id.hall_mv)
-    public void HallMV(View view) {
 
-    }
-
-    @OnClick(R.id.hall_album)
-    public void HallAlbum(View view) {
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        bannerView.start();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        bannerView.pause();
-    }
-
+    //=================recycle人view的点击事件======================
     @Override
     public void itemChildClick(View childView, int position) {
         Log.e(TAG, "itemChildClick: " + "类型");
@@ -376,6 +392,30 @@ public class MusicHallFragment extends BaseFragment implements MyDelegateAdapter
     @Override
     public void itemClick(View view, int position) {
         Log.e(TAG, "itemClick: " + view.getId());
+    }
+
+    //bindView点击事件
+    @OnClick({R.id.hall_singer, R.id.hall_ranking, R.id.hall_radio, R.id.hall_songList, R.id.hall_mv, R.id.hall_album})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.hall_singer:
+                break;
+            case R.id.hall_ranking:
+                addToMainContent(MusicHallRankingFragment.newInstance(),
+                        MusicHallRankingFragment.Fragment_Tag, MainFragment.Fragment_Tag);
+                break;
+            case R.id.hall_radio:
+                break;
+            case R.id.hall_songList:
+                //替换猪fragment
+                addToMainContent(MusicHallCategoryFragment.newInstance(data),
+                        MusicHallCategoryFragment.Fragment_Tag, MainFragment.Fragment_Tag);
+                break;
+            case R.id.hall_mv:
+                break;
+            case R.id.hall_album:
+                break;
+        }
     }
 
     private class MyMZViewHolder implements MZViewHolder<String> {

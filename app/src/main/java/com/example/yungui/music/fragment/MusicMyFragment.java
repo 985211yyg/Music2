@@ -2,8 +2,13 @@ package com.example.yungui.music.fragment;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +22,8 @@ import com.example.yungui.music.MainFragment;
 import com.example.yungui.music.R;
 import com.example.yungui.music.adapter.MusicAdapter;
 import com.example.yungui.music.base.BaseFragment;
+
+import java.util.List;
 
 import butterknife.BindView;
 import io.reactivex.disposables.Disposable;
@@ -48,6 +55,30 @@ public class MusicMyFragment extends BaseFragment implements MusicStateListener,
     private MainActivity mainActivity;
     private Disposable disposable;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (disposable != null) {
+            disposable.isDisposed();
+        }
+    }
+
     public MusicMyFragment() {
     }
 
@@ -61,12 +92,6 @@ public class MusicMyFragment extends BaseFragment implements MusicStateListener,
     @Override
     protected int getLayoutID() {
         return R.layout.fragment_music_music_my;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -97,55 +122,23 @@ public class MusicMyFragment extends BaseFragment implements MusicStateListener,
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        initData();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    private void initData() {
-        mainActivity = (MainActivity) getActivity();
-//        //使用RxJava进行异步操作
-//        SongsUtils.getSongs(getActivity())
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<List<Song>>() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//                        disposable = d;
-//                    }
-//
-//                    @Override
-//                    public void onNext(List<Song> value) {
-//                        if (value != null) {
-//                            musicAdapter.addData(value);
-//                        }
-//                        musicAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Toast.makeText(getActivity(), "加载出错", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
+    public void onPlayBackServiceConnected(@NonNull MediaControllerCompat mediaControllerCompat) {
 
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (disposable != null) {
-            disposable.isDisposed();
-        }
+    public void onMetadataChanged(MediaMetadataCompat mediaMetadataCompat) {
+
+    }
+
+    @Override
+    public void onPlaybackStateChanged(PlaybackStateCompat playbackStateCompat) {
+
+    }
+
+    @Override
+    public void onMediaItemsLoaded(List<MediaBrowserCompat.MediaItem> mediaItems) {
+
     }
 
     @Override
@@ -153,7 +146,9 @@ public class MusicMyFragment extends BaseFragment implements MusicStateListener,
         int id = v.getId();
         switch (id) {
             case R.id.local:
-                addToMainContent(MusicMyLocalFragment.newInstance(), MusicMyFragment.Fragment_Tag, MainFragment.Fragment_Tag);
+                addToMainContent(MusicMyLocalFragment.newInstance(),
+                        MusicMyFragment.Fragment_Tag,
+                        MainFragment.Fragment_Tag);
                 break;
             case R.id.download_song:
                 break;

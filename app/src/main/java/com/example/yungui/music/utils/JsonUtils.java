@@ -1,5 +1,7 @@
 package com.example.yungui.music.utils;
 
+import android.util.Log;
+
 import com.example.yungui.music.MainApplication;
 import com.example.yungui.music.model.Music;
 import com.example.yungui.music.model.PlayList;
@@ -19,7 +21,10 @@ import io.reactivex.ObservableOnSubscribe;
  */
 
 public class JsonUtils {
+    private static final String TAG = "JsonUtils";
+
     public static List<Music> paresMusicFromAssetsSource(String sourceName) {
+        Log.e(TAG, "paresMusicFromAssetsSource: ");
         return Music.arrayMusicFromData(pares(sourceName));
     }
 
@@ -27,7 +32,9 @@ public class JsonUtils {
         return PlayList.arrayPlayListFromData(pares(sourceName));
     }
 
+    //根据文件名获取文件转换成字符串
     private static String pares(String sourceName) {
+        Log.e(TAG, "pares: " + sourceName);
         StringBuffer buffer = new StringBuffer();
         try {
             InputStream inputStream = MainApplication.context.getResources().getAssets().open(sourceName);
@@ -35,10 +42,12 @@ public class JsonUtils {
             char[] cBuffer = new char[1024];
             int hasRead = 0;
             while ((hasRead = reader.read(cBuffer)) > 0) {
+                Log.e(TAG, "开始解析Json数据 ");
                 buffer.append(new String(cBuffer, 0, hasRead));
             }
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e(TAG, "pares: 解析数据出错");
         }
         return buffer.toString();
     }

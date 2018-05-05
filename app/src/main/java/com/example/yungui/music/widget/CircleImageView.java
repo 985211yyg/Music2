@@ -4,8 +4,6 @@ package com.example.yungui.music.widget;
  * Created by yungui on 2017/10/10.
  */
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -22,10 +20,15 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 import com.example.yungui.music.R;
@@ -35,7 +38,8 @@ import com.example.yungui.music.R;
  * updateShaderMatrix保证图片损失度最小和始终绘制图片正中央的那部分
  * 作者思路是画圆用渲染器位图填充，而不是把Bitmap重绘切割成一个圆形图片。
  */
-public class CircleImageView extends android.support.v7.widget.AppCompatImageView implements ObjectAnimator.AnimatorUpdateListener {
+public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
+    private static final String TAG = "CircleImageView";
     //缩放类型
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
@@ -69,8 +73,10 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
     private float mDrawableRadius;// 图片半径
     private float mBorderRadius;// 带边框的的图片半径
 
-    private float currentRotateValue;//当前旋转的值
-    private ObjectAnimator objectAnimator;
+    private int degree;
+    private int maxDegree;
+    private MediaControllerCompat mMediaControllerCompat;
+    private MediaControllerCompat.Callback mCallback;
 
     private ColorFilter mColorFilter;
     //初始false
@@ -121,8 +127,6 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
             setup();
             mSetupPending = false;
         }
-        //初始化旋转动画
-        initRotationAnimation();
     }
 
     /**
@@ -203,9 +207,6 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
         setBorderColor(getContext().getResources().getColor(borderColorRes));
     }
 
-    public int getBorderWidth() {
-        return mBorderWidth;
-    }
 
     public void setBorderWidth(int borderWidth) {
         if (borderWidth == mBorderWidth) {
@@ -275,61 +276,49 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
         invalidate();
     }
 
-    public void setCurrentRotateValue(float currentRotateValue) {
-        this.currentRotateValue = currentRotateValue;
-        setRotation(currentRotateValue);
-    }
 
-    public float getCurrentRotateValue() {
-        return currentRotateValue;
-    }
-
-    public void startAndPause() {
-        if (objectAnimator != null) {
-            if (objectAnimator.isRunning()) {
-                objectAnimator.pause();
-            } else if (objectAnimator.isPaused()) {
-                objectAnimator.resume();
-            } else {
-                objectAnimator.start();
+    public void setMediaController(MediaControllerCompat mediaControllerCompat) {
+        if (mediaControllerCompat != null) {
+            Log.e(TAG, "setMediaController: ");
+            mCallback = new MyMediaControllerCallback();
+            mMediaControllerCompat = mediaControllerCompat;
+            mMediaControllerCompat.registerCallback(mCallback);
+            if (mediaControllerCompat.getPlaybackState() != null && mediaControllerCompat.getMetadata() != null) {
+                mCallback.onMetadataChanged(mediaControllerCompat.getMetadata());
+                mCallback.onPlaybackStateChanged(mediaControllerCompat.getPlaybackState());
             }
+        } else if (mMediaControllerCompat != null) {
+            mMediaControllerCompat.unregisterCallback(mCallback);
+            mCallback = null;
+        }
+
+    }
+
+
+    public void disconnectController() {
+        if (mMediaControllerCompat != null) {
+            mMediaControllerCompat.unregisterCallback(mCallback);
+            mMediaControllerCompat = null;
+            mCallback = null;
         }
     }
 
-    private void initRotationAnimation() {
-        objectAnimator = ObjectAnimator.ofFloat(this, "rotation", 0, 360);
-        objectAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        objectAnimator.setRepeatMode(ValueAnimator.RESTART);
-        objectAnimator.setDuration(30000);
-        objectAnimator.setInterpolator(new LinearInterpolator());
-        objectAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
+    public void setDegree(int degree) {
+        Log.e(TAG, ">>>>>>>>>>>>>>>>setDegree: " + degree);
+        this.setRotation(degree);
+        postInvalidate();
+    }
 
-            }
+    public int getDegree() {
+        return degree;
+    }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
+    public void setMaxDegree(int maxDegree) {
+        this.maxDegree = maxDegree;
+    }
 
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        //数值更新动画，获取旋转值
-        objectAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                currentRotateValue = (float) animation.getAnimatedValue();
-            }
-        });
+    public int getMaxDegree() {
+        return maxDegree;
     }
 
     /**
@@ -453,9 +442,61 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
         mBitmapShader.setLocalMatrix(mShaderMatrix);
     }
 
-    @Override
-    public void onAnimationUpdate(ValueAnimator animation) {
+    //======自定义回调=========
+    private ValueAnimator mValueAnimator;
 
+    private class MyMediaControllerCallback extends MediaControllerCompat.Callback implements ValueAnimator.AnimatorUpdateListener {
+        @Override
+        public void onSessionDestroyed() {
+            super.onSessionDestroyed();
+        }
+
+        @Override
+        public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            super.onPlaybackStateChanged(state);
+            Log.e(TAG, ">>>>>>>>>>>>>>>>>>onPlaybackStateChanged: ");
+            restAnimator();
+            int degree = state != null ? (int) state.getPosition() : 0;
+            setDegree(degree);
+            if (state != null && state.getState() == PlaybackState.STATE_PLAYING) {
+                Log.e(TAG, ">>>>>>>>>>>>>>>onPlaybackStateChanged: 设置动画");
+                int time = (getMaxDegree() - degree);
+                mValueAnimator = ValueAnimator.ofInt(0, 360).setDuration(5000);
+                mValueAnimator.setInterpolator(new LinearInterpolator());
+                mValueAnimator.addUpdateListener(this);
+                mValueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+                mValueAnimator.start();
+
+            }
+        }
+
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            super.onMetadataChanged(metadata);
+            Log.e(TAG, "》》》》》》》》》》》》》》》》》onMetadataChanged: ");
+            int maxDegree = metadata != null ? (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) : 0;
+            setDegree(0);
+            setMaxDegree(maxDegree);
+        }
+
+        private void restAnimator() {
+            if (mValueAnimator != null) {
+                mValueAnimator.cancel();
+                mValueAnimator = null;
+            }
+
+
+        }
+
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            Log.e(TAG, "onAnimationUpdate: ");
+            int degree = (int) animation.getAnimatedValue();
+            setDegree(degree);
+        }
     }
+
+
 }
 

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,22 +17,23 @@
             android:id="@+id/hall_category_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:gravity="center"
             android:theme="@style/AppTheme.PopupOverlay"
-            app:navigationIcon="@drawable/arrow_white">
+            app:navigationIcon="@drawable/arrow_white"
+            app:title=" ">
 
             <TextView
                 android:id="@+id/hall_category_toolbar_title"
                 style="@style/TextAppearance.AppCompat.Medium"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="歌单"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/sp_18" />
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -115,12 +117,11 @@
             </RelativeLayout>
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/suggest_category_recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="1000dp"
-                android:scrollbarAlwaysDrawHorizontalTrack="true"
-                app:layout_anchor="@id/anchor" />
-
-
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:scrollbarAlwaysDrawHorizontalTrack="true" />
         </LinearLayout>
 
 

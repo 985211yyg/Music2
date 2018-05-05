@@ -2,7 +2,12 @@ package com.example.yungui.music;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +24,8 @@ import com.example.yungui.music.fragment.MusicFindFragment;
 import com.example.yungui.music.fragment.MusicHallFragment;
 import com.example.yungui.music.fragment.MusicMyFragment;
 
+import java.util.List;
+
 public class MainFragment extends BaseFragment {
     public static final String Fragment_Tag = "MainFragment";
 
@@ -28,12 +35,13 @@ public class MainFragment extends BaseFragment {
     private Toolbar toolbar;
 
     private String[] tabText = new String[]{"我的", "音乐馆", "发现"};
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
-    private String mParam2;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
+    }
 
     public MainFragment() {
 
@@ -56,7 +64,7 @@ public class MainFragment extends BaseFragment {
     protected void initView(Bundle savedInstanceState) {
         toolbar = rootView.findViewById(R.id.toolbar);
         //toolbar与drawer联动
-        ((MainActivity)getActivity()).initToolBarEvent(toolbar);
+        ((MainActivity) getActivity()).initToolBarEvent(toolbar);
         //是的fragment支持toolbar,然后可以设置menu
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -77,9 +85,22 @@ public class MainFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    public void onPlayBackServiceConnected(@NonNull MediaControllerCompat mediaControllerCompat) {
+
+    }
+
+    @Override
+    public void onMetadataChanged(MediaMetadataCompat mediaMetadataCompat) {
+
+    }
+
+    @Override
+    public void onPlaybackStateChanged(PlaybackStateCompat playbackStateCompat) {
+
+    }
+
+    @Override
+    public void onMediaItemsLoaded(List<MediaBrowserCompat.MediaItem> mediaItems) {
 
     }
 

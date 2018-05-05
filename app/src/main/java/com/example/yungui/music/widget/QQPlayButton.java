@@ -1,6 +1,5 @@
 package com.example.yungui.music.widget;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -9,17 +8,17 @@ import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.media.session.PlaybackState;
 import android.support.annotation.Nullable;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.ToggleButton;
 
 import com.example.yungui.music.R;
@@ -41,21 +40,25 @@ public class QQPlayButton extends ToggleButton {
     private int refreshColor;
     //半径
     private int mRadius;
+    private static final String TAG = "QQPlayButton";
     private static final int DefRadius = 50;
     private static final int DefWidth = 3;
     private static final float DefRefreshAngle = 20.0f;
+    private static final float DefMaxProgress = 100;
     //外框的宽度
     private float outBorderWidth;
     private int DefColor;
     //进度
     private float progress;
+    private float maxProgress;
 
-    //刷新角度
-    private float refreshAngle;
-    //开始刷新的角度
-    private float startRefreshAngle = 0.0f;
 
-    private boolean refreshing;
+    private float refreshAngle; //刷新角度
+    private float startRefreshAngle = 0.0f;//开始刷新的角度
+
+    private boolean refreshing;//是否允许刷新
+    private boolean showProgress;//是否显示进度
+
     //定义画笔
     private Paint outBorderPaint;//外环画笔
     private Paint pausePaint;//暂停按钮画笔
@@ -63,6 +66,9 @@ public class QQPlayButton extends ToggleButton {
     private Paint progressPaint;//画纸进度的画笔
     private Paint refreshPaint;//刷新画笔
     private float cx, cy;
+    private MediaControllerCompat mMediaController;
+    private MyControllerCallback mControllerCallback;
+    private MyClickListener mMyClickListener;
 
     public QQPlayButton(Context context) {
         this(context, null);
@@ -90,8 +96,10 @@ public class QQPlayButton extends ToggleButton {
         progressColor = typedArray.getColor(R.styleable.QQPlayButton_progressColor, DefColor);
         refreshColor = typedArray.getColor(R.styleable.QQPlayButton_refreshColor, Color.WHITE);
         progress = typedArray.getFloat(R.styleable.QQPlayButton_progress, 0);
+        maxProgress = typedArray.getFloat(R.styleable.QQPlayButton_MaxProgress, DefMaxProgress);
         refreshAngle = typedArray.getFloat(R.styleable.QQPlayButton_refreshAngle, DefRefreshAngle);
         refreshing = typedArray.getBoolean(R.styleable.QQPlayButton_refreshing, false);
+        showProgress = typedArray.getBoolean(R.styleable.QQPlayButton_showProgress, true);
         typedArray.recycle();
     }
 
@@ -173,15 +181,19 @@ public class QQPlayButton extends ToggleButton {
         } else {
             drawPlay(canvas, cx, cy, mRadius, playPaint);
         }
+
         //绘制进度条
-        drawProgress(canvas, outBorderWidth, progress, progressPaint);
+        if (showProgress) {
+            drawProgress(canvas, outBorderWidth, progress, progressPaint);
+        }
         if (refreshing) {
             //绘制刷新条
-            drawRefresh(canvas, outBorderPaint, refreshAngle, refreshPaint);
+            drawRefresh(canvas, refreshAngle, refreshPaint);
         }
     }
 
-    private void drawRefresh(Canvas canvas, Paint outBorderPaint, float refreshAngle, Paint refreshPaint) {
+    //绘制刷新动作
+    private void drawRefresh(Canvas canvas, float refreshAngle, Paint refreshPaint) {
         RectF rectF = new RectF(getPaddingLeft() + outBorderWidth, getPaddingTop() + outBorderWidth, mRadius * 2, mRadius * 2);
         canvas.drawArc(rectF, -90 + startRefreshAngle, refreshAngle, false, refreshPaint);
     }
@@ -218,60 +230,188 @@ public class QQPlayButton extends ToggleButton {
         canvas.drawArc(rectF, -90, sweepAngle, false, paint);
     }
 
-    public ValueAnimator cacheRefresh() {
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0.0f, 360f);
-        valueAnimator.setDuration(3000);
-        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        valueAnimator.setRepeatMode(ValueAnimator.RESTART);
-        valueAnimator.setInterpolator(new LinearInterpolator());
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+    //===============对外api================================================
+    private ValueAnimator cacheAnimator;
+
+    public void cacheRefresh(boolean refreshing) {
+        cacheAnimator = ValueAnimator.ofFloat(0.0f, 360f);
+        cacheAnimator.setDuration(3000);
+        cacheAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        cacheAnimator.setRepeatMode(ValueAnimator.RESTART);
+        cacheAnimator.setInterpolator(new LinearInterpolator());
+        cacheAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = (float) animation.getAnimatedValue();
                 setStartRefreshAngle(value);
             }
         });
-        return valueAnimator;
+        if (refreshing) {
+            cacheAnimator.start();
+        } else {
+            if (cacheAnimator.isRunning()) {
+                cacheAnimator.pause();
+                cacheAnimator = null;
+            }
+        }
     }
 
-
-    public float getProgress() {
-        return progress;
-    }
 
     public void setProgress(float progress) {
-        this.progress = (float) (3.6 * progress);
+        this.progress = 360 * (progress / maxProgress);
         postInvalidate();
     }
 
-    public synchronized float getStartRefreshAngle() {
-        return startRefreshAngle;
+    public float getMaxProgress() {
+        return maxProgress;
     }
+
+    public void setMaxProgress(float maxProgress) {
+        this.maxProgress = maxProgress;
+        postInvalidate();
+
+    }
+
 
     public synchronized void setStartRefreshAngle(float startRefreshAngle) {
         this.startRefreshAngle = startRefreshAngle;
         postInvalidate();
     }
 
-    public synchronized void setRefreshing(boolean refreshing) {
+    public void setRefreshing(boolean refreshing) {
         this.refreshing = refreshing;
         postInvalidate();
     }
 
-    public float getRefreshAngle() {
-        return refreshAngle;
-    }
 
-    public void setRefreshAngle(float refreshAngle) {
+    private void setRefreshAngle(float refreshAngle) {
         this.refreshAngle = refreshAngle;
         postInvalidate();
     }
 
-    public void UpdateStatue(boolean isPlay) {
-        this.setChecked(!isPlay);
-        postInvalidate();
+    //与mediaController关联
+    public void setMediaController(final MediaControllerCompat mediaController) {
+        if (mediaController != null) {
+            mControllerCallback = new MyControllerCallback();
+            mMyClickListener = new MyClickListener();
+            setOnClickListener(mMyClickListener);
+            mediaController.registerCallback(mControllerCallback);
+            if (mediaController.getPlaybackState() != null && mediaController.getMetadata() != null) {
+                Log.e(TAG, "setMediaController:初始化");
+                setChecked(mediaController.getPlaybackState().getState() == PlaybackState.STATE_PLAYING ? false : true);
+                mControllerCallback.onMetadataChanged(mediaController.getMetadata());
+                mControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
+            }
+            mMediaController = mediaController;
+        }
+
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mMediaController != null) {
+            mMediaController.unregisterCallback(mControllerCallback);
+            mControllerCallback = null;
+        }
+    }
+
+    //解绑
+    public void disconnectController() {
+        if (mMediaController != null) {
+            mMediaController.unregisterCallback(mControllerCallback);
+            mControllerCallback = null;
+            mMediaController = null;
+            mMyClickListener = null;
+        }
+    }
+
+    private ValueAnimator progressAnimator;
+
+    //MediaControllerCompat回调
+    public class MyControllerCallback extends MediaControllerCompat.Callback implements ValueAnimator.AnimatorUpdateListener {
+        @Override
+        public void onSessionDestroyed() {
+            super.onSessionDestroyed();
+        }
+
+        @Override
+        public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            super.onPlaybackStateChanged(state);
+            Log.e(TAG, "onPlaybackStateChanged: ");
+            boolean isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
+            if (isPlaying) {
+                QQPlayButton.this.setChecked(false);
+                postInvalidate();
+            } else {
+                QQPlayButton.this.setChecked(true);
+                postInvalidate();
+            }
+            restAnimator();
+            //获取进度
+            int progress = state != null ? (int) state.getPosition() : 0;
+            setProgress(progress);
+            if (showProgress && state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING) {
+                //时间和进度相匹配
+                int timeToEnd = (int) ((getMaxProgress() - progress) / state.getPlaybackSpeed());
+                progressAnimator = ValueAnimator.ofInt(progress, (int) getMaxProgress());
+                progressAnimator.setDuration(timeToEnd);
+                progressAnimator.setInterpolator(new LinearInterpolator());
+                progressAnimator.addUpdateListener(this);
+                progressAnimator.start();
+            }
+
+        }
+
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            super.onMetadataChanged(metadata);
+            Log.e(TAG, "onMetadataChanged: ");
+            int max = metadata != null ? (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) : 0;
+            //重置进度
+            setProgress(0);
+            setMaxProgress(max);
+        }
+
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            int progress = (int) animation.getAnimatedValue();
+            setProgress(progress);
+
+        }
+
+        // If there's an ongoing animation, stop it now.
+        private void restAnimator() {
+            if (progressAnimator != null) {
+                progressAnimator.cancel();
+                progressAnimator = null;
+            }
+        }
+    }
+
+    /**
+     * 点击事件
+     */
+    private class MyClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Log.e(TAG, "onClick: ");
+            if (mMediaController != null) {
+                if (mMediaController.getPlaybackState() != null
+                        && mMediaController.getPlaybackState().getState() == PlaybackState.STATE_PLAYING) {
+                    mMediaController.getTransportControls().pause();
+                    QQPlayButton.this.setChecked(true);
+                    postInvalidate();
+                } else {
+                    mMediaController.getTransportControls().play();
+                    QQPlayButton.this.setChecked(false);
+                    postInvalidate();
+                }
+            }
+        }
+    }
 }
 
 

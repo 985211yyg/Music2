@@ -3,6 +3,7 @@ package com.example.yungui.music.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.media.session.MediaControllerCompat;
 
 import com.example.yungui.music.fragment.BottomControlBarItemFragment;
 import com.example.yungui.music.info.MusicInfo;

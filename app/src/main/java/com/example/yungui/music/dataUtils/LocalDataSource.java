@@ -32,7 +32,6 @@ public class LocalDataSource {
 
     //私有构造方法
     private LocalDataSource(Context context, AppExecutors appExecutors) {
-        Log.e(TAG, "LocalDataSource: ");
         this.context = context;
         localMusicInfos = new MutableLiveData<>();
         this.appExecutors = appExecutors;
@@ -50,15 +49,12 @@ public class LocalDataSource {
 
     //提供本地歌曲数据
     public LiveData<List<MusicInfo>> getLocalMusicInfos() {
-        Log.e(TAG, "<<<<<<<<<<<<<<<<<<<<<<<getLocalMusicInfos:start ");
         queryMusicInfo();
-        Log.e(TAG, "<<<<<<<<<<<<<<<<<<<<<<<getLocalMusicInfos: end");
         return localMusicInfos;
     }
 
     ///查询数据
     public void queryMusicInfo() {
-        Log.e(TAG, "queryMusicInfo: ");
         Observable.just(MusicUtils.queryMusic(context, IConstants.START_FROM_LOCAL))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -70,7 +66,6 @@ public class LocalDataSource {
 
                     @Override
                     public void onNext(List<MusicInfo> musicInfos) {
-                        Log.e(TAG, "查询到的数据: " + musicInfos.size());
                         localMusicInfos.postValue(musicInfos);
                     }
 
@@ -81,7 +76,6 @@ public class LocalDataSource {
 
                     @Override
                     public void onComplete() {
-                        Log.e(TAG, "检查数据是否为空: "+localMusicInfos.getValue());
 
                     }
                 });

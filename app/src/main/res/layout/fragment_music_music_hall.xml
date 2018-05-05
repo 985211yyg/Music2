@@ -3,15 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollIndicators="right"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.yungui.music.fragment.MusicHallFragment">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:descendantFocusability="beforeDescendants"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -71,7 +74,7 @@
                     android:layout_margin="@dimen/dp_4"
                     android:layout_row="0"
                     android:layout_rowWeight="1"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -214,7 +217,8 @@
                 android:id="@+id/music_hall_recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="2000dp"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"
+                />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

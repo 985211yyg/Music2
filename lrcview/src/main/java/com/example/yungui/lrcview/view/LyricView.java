@@ -17,14 +17,20 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.animation.DynamicAnimation;
+import android.support.animation.FlingAnimation;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -33,6 +39,10 @@ import android.widget.OverScroller;
 import com.example.yungui.lrcview.R;
 import com.example.yungui.lrcview.bean.LineInfo;
 import com.example.yungui.lrcview.bean.LrcInfo;
+
+import java.lang.ref.WeakReference;
+
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author yungui
@@ -91,6 +101,7 @@ public class LyricView extends View {
     private Paint textPaint, buttonPaint, indicatorPaint, indicatorButtonPaint, dashPaint, timePaint;
     private VelocityTracker velocityTracker;//速度追踪器
     private ValueAnimator flingAnimator, scrollAnimator;
+    private FlingAnimation mFlingAnimation;
 
     private boolean isUserTouch = false;  // 判断当前用户是否触摸
     private boolean isShowIndicator = false;  // 判断当前滑动指示器是否显示
@@ -116,28 +127,10 @@ public class LyricView extends View {
     /**
      * 用于歌词滚动的handler
      */
-    private Handler postHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_PLAYER_HIDE:
-                    postHandler.sendEmptyMessageDelayed(MSG_PLAYER_SLIDE, 1200);
-                    isShowIndicator = false;
-                    invalidateView();
-                case MSG_PLAYER_SLIDE:
-                    smoothScrollTo(measureCurrentScrollY(mCurrentPlayLine));
-                    postHandler.sendEmptyMessageDelayed(MSG_LRC_SCROLL, 0);
-                    invalidateView();
-                case MSG_LRC_SCROLL:
-                    //重新开始歌词滚动动画
-                    if (scrollAnimator != null && !scrollAnimator.isPaused()) {
-                        scrollAnimator.start();
-                    }
-                    invalidateView();
-            }
-        }
-    };
+    private Handler postHandler;
+    private MediaControllerCompat mMediaController;
+    private MyControllerCallback mControllerCallback;
+    private Disposable mDisposable, mDisposable1;
 
 
     public LyricView(Context context) {
@@ -155,6 +148,7 @@ public class LyricView extends View {
     }
 
     private void initAttr(Context context, AttributeSet attrs) {
+        Log.e(TAG, "initAttr: ");
         mContext = context;
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LyricView);
         lineHeight = a.getDimension(R.styleable.LyricView_lineHeight, applyDimension(TypedValue.COMPLEX_UNIT_DIP, Def_Line_Height));
@@ -172,9 +166,9 @@ public class LyricView extends View {
     }
 
     private void initComponent(Context context) {
-        lineHeight = lineHeight + lineSpace;
+        //初始化滑动帮助类
         overScroller = new OverScroller(context, new AccelerateDecelerateInterpolator());
-
+        lineHeight = lineHeight + lineSpace;
         textPaint = new Paint();
         textPaint.setDither(true);
         textPaint.setAntiAlias(true);
@@ -219,6 +213,8 @@ public class LyricView extends View {
         DashPathEffect dashPathEffect = new DashPathEffect(new float[]{10, 8}, 0);
         dashPaint.setPathEffect(dashPathEffect);
 
+        postHandler = new MyHandler(this);
+
     }
 
     @Override
@@ -241,7 +237,7 @@ public class LyricView extends View {
     protected void onDraw(Canvas canvas) {
         //检查是否有歌词然后可以滚动
         if (checkScrollable()) {
-            for (int i = 0; i < lineCount-1; i++) {
+            for (int i = 0; i < lineCount - 1; i++) {
                 String text = lrcInfo.lineInfos.get(i).getLrc();
                 textPaint.getTextBounds(text, 0, text.length(), LrcBound);
                 float startX = getMeasuredWidth() / 2 - LrcBound.width() / 2;
@@ -303,6 +299,39 @@ public class LyricView extends View {
             isShowIndicator = false;
         } else {
             invalidateView();
+        }
+    }
+
+    //进行弹性滑动的计算工具
+    @Override
+    public void computeScroll() {
+        //滚动没有结束
+        if (overScroller.computeScrollOffset()) {
+            //继续滚动
+            scrollTo(overScroller.getCurrX(), overScroller.getCurrY());
+            //在此调用draw（)方法重绘,而draw方法又会再次调用computeScroll
+            invalidateView();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (scrollAnimator != null) {
+            if (scrollAnimator.isRunning()) {
+                scrollAnimator.cancel();
+                scrollAnimator = null;
+            }
+        }
+        if (mMediaController != null) {
+            mMediaController.unregisterCallback(mControllerCallback);
+            mMediaController = null;
+        }
+        if (mDisposable1 != null) {
+            mDisposable1 = null;
+        }
+        if (mDisposable != null) {
+            mDisposable = null;
         }
     }
 
@@ -382,6 +411,7 @@ public class LyricView extends View {
             velocityTracker = VelocityTracker.obtain();
         }
         velocityTracker.addMovement(event);
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 actionDown(event);
@@ -432,18 +462,23 @@ public class LyricView extends View {
      */
     private void actionMove(MotionEvent event) {
         //todo 左右滑动
-        if ((Math.abs(downX - event.getX()) - Math.abs(downY - event.getY())) > 10) {
+        if ((Math.abs(downX - event.getX()) - Math.abs(downY - event.getY()))
+                > ViewConfiguration.get(mContext).getScaledTouchSlop()) {
             isShowIndicator = false;
             isUserTouch = false;
             mScrollX = lastScrollX + (downX - event.getX());
-        } else if ((Math.abs(downX - event.getX()) - Math.abs(downY - event.getY())) < -10) {
-            //todo 上下滑动
+        }
+        //todo 上下滑动
+        else if ((Math.abs(downX - event.getX()) - Math.abs(downY - event.getY())) <
+                -ViewConfiguration.get(mContext).getScaledTouchSlop()) {
             isUserTouch = true;
             isShowIndicator = true;
             //如果有歌词，可以滚动
             if (checkScrollable()) {
                 VelocityTracker tracker = velocityTracker;
+                //计算速度，一秒内划过多少像素
                 tracker.computeCurrentVelocity(1000, maxFlingVelocity);
+
                 float scrollY = lastScrollY + (downY - event.getY());
                 //计算滚动位置和内容中间位置的的距离，上负下正
                 float value01 = scrollY - (lineCount * lineHeight * 0.5f);
@@ -480,8 +515,8 @@ public class LyricView extends View {
             }
         }
         releaseVelocityTracker();
-        // 触摸结束 2.4s 后发送一个指示器隐藏的消息
-        postHandler.sendEmptyMessageDelayed(MSG_PLAYER_HIDE, 2400);
+        // 触摸结束 2s 后发送一个指示器隐藏的消息
+        postHandler.sendEmptyMessageDelayed(MSG_PLAYER_HIDE, 2000);
 
         if (checkScrollable()) {
             isUserTouch = false; // 用户手指离开屏幕，取消触摸标记
@@ -498,10 +533,11 @@ public class LyricView extends View {
                 return;
             }
 
-            //如果竖直滚动速度大于指定滚动速度，直接飞过去
+            //如果竖直滚动速度大于指定滚动速度，开始滚动然后减速
             if (Math.abs(mVelocity) > mMinStartFlingSpeed) {
                 //跑的不行用飞的？
-                doFlingAnimator(mVelocity);
+//                doFlingAnimator(mVelocity);
+                doFling(mVelocity);
                 return;
             }
 
@@ -529,7 +565,6 @@ public class LyricView extends View {
         releaseVelocityTracker();
     }
 
-
     /**
      * 计算阻尼效果的大小
      *
@@ -538,6 +573,7 @@ public class LyricView extends View {
      */
     //最大的摩擦减速距离
     private final int maxDampingDistance = 360;
+
 
     private float measureDampingDistance(float value2) {
         //如果这个距离大于
@@ -584,7 +620,6 @@ public class LyricView extends View {
             invalidate();
         }
     }
-
 
     /**
      * 滑行动画 让子弹飞一会？？
@@ -638,6 +673,39 @@ public class LyricView extends View {
         flingAnimator.start();
     }
 
+
+    /**
+     * *实现fling滚动===滚动一段距离然后逐渐停下来
+     *
+     * @param velocity
+     */
+    private void doFling(float velocity) {
+        mFlingAnimation = new FlingAnimation(this, DynamicAnimation.Y);
+        mFlingAnimation.setStartVelocity(velocity);
+        mFlingAnimation.setFriction(0.5f);
+        mFlingAnimation.start();
+        isScroll = true;
+        mFlingAnimation.addUpdateListener(new DynamicAnimation.OnAnimationUpdateListener() {
+            @Override
+            public void onAnimationUpdate(DynamicAnimation animation, float value, float velocity) {
+                //更新距离顶部的距离
+                mScrollY = value;
+                //滚动的时候根据mScrollY，不断计算滚到到了哪一行，便于滚回到原来播放的位置
+                measureCurrentLine();
+                //重绘！！！
+                invalidateView();
+                Log.e(TAG, "onAnimationUpdate: 当前的值" + value + "当前的速度：" + velocity);
+
+            }
+        });
+        mFlingAnimation.addEndListener(new DynamicAnimation.OnAnimationEndListener() {
+            @Override
+            public void onAnimationEnd(DynamicAnimation animation, boolean canceled, float value, float velocity) {
+                isScroll = false;
+            }
+        });
+    }
+
     /**
      * 给定时间，让歌词滚动到与时间对应的位置
      * ，根据时间匹配歌词的时间，得到所在歌词行数，然后计算要滚动的距离
@@ -670,6 +738,7 @@ public class LyricView extends View {
                 currentLrc = lrcInfo.getLineInfos().get(mCurrentPlayLine).getLrc();
                 //用播放位置计算滚动距离，然后滚
                 smoothScrollTo(measureCurrentScrollY(mCurrentPlayLine));
+
             } else {
                 //如果是当前的行，不用滚
                 if (!isUserTouch && !isShowIndicator) {
@@ -796,6 +865,12 @@ public class LyricView extends View {
         lineCount = 0;
         //重置滚动距离
         mScrollY = 0;
+        if (mDisposable1 != null) {
+            mDisposable1 = null;
+        }
+        if (mDisposable != null) {
+            mDisposable = null;
+        }
     }
 
     private void restLrc() {
@@ -950,14 +1025,6 @@ public class LyricView extends View {
         return indicatorColor;
     }
 
-    /**
-     * 返回当亲播放的而歌词
-     *
-     * @return
-     */
-    public String getCurrentLrc() {
-        return currentLrc;
-    }
 
     /**
      * 设置一般歌词的颜色
@@ -967,10 +1034,6 @@ public class LyricView extends View {
     public void setNormalColor(int normalColor) {
         this.normalColor = mContext.getResources().getColor(normalColor);
         invalidateView();
-    }
-
-    public int getNormalColor() {
-        return normalColor;
     }
 
     /**
@@ -983,9 +1046,6 @@ public class LyricView extends View {
         invalidateView();
     }
 
-    public int getHeightLightColor() {
-        return heightLightColor;
-    }
 
     /**
      * 设置歌词的大小
@@ -996,10 +1056,6 @@ public class LyricView extends View {
         this.textSize = applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize);
         textPaint.setTextSize(this.textSize);
         invalidateView();
-    }
-
-    public float getTextSize() {
-        return textSize;
     }
 
 
@@ -1013,18 +1069,6 @@ public class LyricView extends View {
         invalidateView();
     }
 
-    public int getCurrentShowLine() {
-        return mCurrentShowLine;
-    }
-
-    /**
-     * 获取正在播放的行
-     *
-     * @return
-     */
-    public int getCurrentPlayLine() {
-        return mCurrentPlayLine;
-    }
 
     /**
      * 设置当前的播放行
@@ -1035,6 +1079,64 @@ public class LyricView extends View {
         this.mCurrentPlayLine = mCurrentPlayLine;
         smoothScrollTo(measureCurrentScrollY(mCurrentPlayLine));
         invalidateView();
+    }
+
+    public void setMediaController(MediaControllerCompat mediaController) {
+        Log.e(TAG, "setMediaController:成功关联！ ");
+        if (mediaController != null) {
+            mMediaController = mediaController;
+            mControllerCallback = new MyControllerCallback();
+            mMediaController.registerCallback(mControllerCallback);
+        }
+    }
+
+    /**
+     * MediaControllerCompat回调
+     */
+    private class MyControllerCallback extends MediaControllerCompat.Callback {
+        @Override
+        public void onPlaybackStateChanged(final PlaybackStateCompat state) {
+            Log.e(TAG, "onPlaybackStateChanged: ");
+            setCurrentTime(state.getPosition());
+        }
+
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            Log.e(TAG, "onMetadataChanged: ");
+            restView();
+        }
+    }
+
+
+    /**
+     * 自定义Handler
+     */
+    private static class MyHandler extends Handler {
+        private WeakReference<LyricView> mLyricViewWeakReference;
+
+        public MyHandler(LyricView view) {
+            mLyricViewWeakReference = new WeakReference<>(view);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_PLAYER_HIDE:
+                    sendEmptyMessageDelayed(MSG_PLAYER_SLIDE, 1200);
+                    mLyricViewWeakReference.get().isShowIndicator = false;
+                    mLyricViewWeakReference.get().invalidateView();
+                case MSG_PLAYER_SLIDE:
+                    mLyricViewWeakReference.get().smoothScrollTo(mLyricViewWeakReference.get().measureCurrentScrollY(mLyricViewWeakReference.get().mCurrentPlayLine));
+                    sendEmptyMessageDelayed(MSG_LRC_SCROLL, 0);
+                    mLyricViewWeakReference.get().invalidateView();
+                case MSG_LRC_SCROLL:
+                    //重新开始歌词滚动动画
+                    if (mLyricViewWeakReference.get().scrollAnimator != null && !mLyricViewWeakReference.get().scrollAnimator.isPaused()) {
+                        mLyricViewWeakReference.get().scrollAnimator.start();
+                    }
+                    mLyricViewWeakReference.get().invalidateView();
+            }
+        }
     }
 
 }

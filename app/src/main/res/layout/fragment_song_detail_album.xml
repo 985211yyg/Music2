@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="com.example.yungui.music.fragment.SongDetailAlbumFragment">
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -81,13 +80,14 @@
 
 
     <com.example.yungui.music.widget.CircleImageView
+        style="@style/MaterialAnimations"
         android:id="@+id/circle_cd"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerInParent="true"
         android:layout_margin="@dimen/dp_10"
         android:src="@mipmap/images"
-        android:transitionName="shareView"
+        android:transitionName="cd"
         app:civ_border_overlay="true"
         app:civ_border_width="@dimen/dp_4" />
 

@@ -21,8 +21,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -35,8 +37,10 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.example.yungui.music.MainActivity;
+import com.example.yungui.music.MainApplication;
 import com.example.yungui.music.R;
 import com.example.yungui.music.service.MediaPlaybackService;
+import com.example.yungui.music.utils.PermissionUtils;
 
 
 /**
@@ -74,7 +78,8 @@ public class MediaNotificationManager {
         //暂停按钮
         mPauseAction =
                 new NotificationCompat.Action(
-                        R.mipmap.ic_pause_white_24dp, "暂停",
+                        R.mipmap.ic_pause_white_24dp,
+                        "暂停",
                         MediaButtonReceiver.buildMediaButtonPendingIntent(
                                 service,
                                 PlaybackStateCompat.ACTION_PAUSE));
@@ -97,7 +102,7 @@ public class MediaNotificationManager {
 
         // Cancel all notifications to handle the case where the Service was killed and
         // restarted by the system.
-        mNotificationManager.cancelAll();
+//        mNotificationManager.cancelAll();
     }
 
     public void onDestroy() {
@@ -105,18 +110,22 @@ public class MediaNotificationManager {
     }
 
     public NotificationManager getNotificationManager() {
+
         return mNotificationManager;
     }
 
     public Notification getNotification(MediaMetadataCompat metadata,
-                                        PlaybackStateCompat state,
+                                        @NonNull PlaybackStateCompat state,
                                         MediaSessionCompat mediaSessionCompat) {
 
         boolean isPlaying = state.getState() == PlaybackStateCompat.STATE_PLAYING;
         mediaControllerCompat = mediaSessionCompat.getController();
         MediaDescriptionCompat description = metadata.getDescription();
         NotificationCompat.Builder builder =
-                buildNotification(state, mediaSessionCompat.getSessionToken(), isPlaying, description);
+                buildNotification(state,
+                        mediaSessionCompat.getSessionToken(),
+                        isPlaying,
+                        description);
         return builder.build();
     }
 
@@ -137,17 +146,18 @@ public class MediaNotificationManager {
                         //右上角的取消按钮
                         .setShowCancelButton(true)
                         .setCancelButtonIntent(
-                                MediaButtonReceiver.buildMediaButtonPendingIntent(service,
+                                MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                        service,
                                         PlaybackStateCompat.ACTION_STOP)))
                 .setColor(service.getResources().getColor(R.color.themeColor))
                 .setSmallIcon(R.mipmap.ic_stat_image_audiotrack)
                 // 点击时进入应用
-                .setContentIntent(mediaControllerCompat.getSessionActivity())
+                .setContentIntent(createContentIntent())
                 //歌名
                 .setContentTitle(description.getTitle())
                 // Subtitle - Usually Artist name.
                 .setContentText(description.getSubtitle())
-                .setSubText(description.getDescription())
+                .setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.mipmap.timg))
                 //当播放暂停时可以被取消
                 .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
                         service, PlaybackStateCompat.ACTION_STOP))
@@ -202,9 +212,11 @@ public class MediaNotificationManager {
 
     private PendingIntent createContentIntent() {
         Intent openUI = new Intent(service, MainActivity.class);
+        //启动位于栈顶的activity，如果不是制定的activity则新建一个
         openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(
                 service, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
     }
+
 
 }

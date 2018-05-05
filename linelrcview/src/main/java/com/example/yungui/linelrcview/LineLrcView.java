@@ -68,18 +68,7 @@ public class LineLrcView extends View implements View.OnClickListener {
     private int index = 0;
     private long lastDuration = 0;
 
-
     private OnClickListener onClickListener;
-
-    private Handler delayHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-
-            if (msg.what == MSG) {
-                startAnimator();
-            }
-        }
-    };
 
 
     public LineLrcView(Context context) {
@@ -258,7 +247,6 @@ public class LineLrcView extends View implements View.OnClickListener {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        valueAnimator.cancel();
         valueAnimator = null;
     }
 
@@ -306,7 +294,12 @@ public class LineLrcView extends View implements View.OnClickListener {
         //更新时间之后再次初始化歌词
         initLrc();
         if (isNewLrc && !isAnimatorRunning) {
-            delayHandler.sendEmptyMessageDelayed(MSG, delayTime);
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startAnimator();
+                }
+            }, delayTime);
         }
         invalidateView();
     }

@@ -2,7 +2,6 @@ package com.example.yungui.music.service;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
@@ -43,13 +42,24 @@ public class MediaPlayerAdapter extends Player {
      */
     private void initializeMediaPlayer() {
         if (mMediaPlayer == null) {
-            mMediaPlayer = new android.media.MediaPlayer();
+            mMediaPlayer = new MediaPlayer();
+            //播放状态监听
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
-                public void onCompletion(android.media.MediaPlayer mp) {
+                public void onCompletion(MediaPlayer mp) {
                     //播放完成
                     playbackInfoListener.OnPlayCompleted();
                     setNewState(PlaybackStateCompat.STATE_PAUSED);
+                }
+            });
+            // 缓冲进度监听
+            mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                @Override
+                public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                    //设置状态为缓冲状态
+                    setNewState(PlaybackStateCompat.STATE_BUFFERING);
+                    //调用接口传出缓冲进度
+                    playbackInfoListener.OnBufferingUpdate(percent);
                 }
             });
         }
@@ -110,9 +120,8 @@ public class MediaPlayerAdapter extends Player {
         }
         mMediaPlayer.seekTo((int) position);
         setNewState(state);
-
-
     }
+
 
     @Override
     public void setVolume(float volume) {
@@ -122,9 +131,9 @@ public class MediaPlayerAdapter extends Player {
 
     }
 
-    //更新状态
+    //设置新的播放状态
     private void setNewState(@PlaybackStateCompat.State int newPlayerState) {
-        Log.d(TAG, "setNewState: " + newPlayerState);
+        //保存状态
         state = newPlayerState;
         //停止状态 播放完一首歌
         if (state == PlaybackStateCompat.STATE_STOPPED) {
@@ -134,7 +143,6 @@ public class MediaPlayerAdapter extends Player {
         final long reportPosition;
         if (mSeekWhileNotPlaying >= 0) {
             reportPosition = mSeekWhileNotPlaying;
-
             if (state == PlaybackStateCompat.STATE_PLAYING) {
                 mSeekWhileNotPlaying = -1;
             }
@@ -150,7 +158,6 @@ public class MediaPlayerAdapter extends Player {
                 SystemClock.elapsedRealtime());
         //通知监听器状态改变
         playbackInfoListener.OnPlaybackInfoChanged(stateBuilder.build());
-
     }
 
     private void playFile(String path) {
@@ -190,6 +197,10 @@ public class MediaPlayerAdapter extends Player {
         }
         //播放,在获取焦点注册监听之后会调用onPlay()方法
         play();
+    }
+
+    private void playNet() {
+
     }
 
     /**

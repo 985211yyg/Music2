@@ -3,7 +3,10 @@ package com.example.yungui.music;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,25 +15,29 @@ import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.example.yungui.music.base.BaseActivity;
+import com.example.yungui.music.fragment.BottomControlBarFragment;
+
+import java.util.List;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
     public static final String TAG = "MainActivity";
+
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
-    protected MediaControllerCompat controllerCompat;
 
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     protected int getLayoutID() {
         return R.layout.activity_main;
-    }
-
-    @Override
-    protected int getMenuID() {
-        return 0;
     }
 
     /**
@@ -39,16 +46,38 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * @return
      */
     @Override
-    protected boolean setToolBar() {
+    public boolean setToolBar() {
         return false;
+    }
+
+    @Override
+    public void onPlayBackServiceConnected(@NonNull MediaControllerCompat mediaControllerCompat) {
+
+    }
+
+    @Override
+    public void onMetadataChanged(MediaMetadataCompat mediaMetadataCompat) {
+
+    }
+
+    @Override
+    public void onPlaybackStateChanged(PlaybackStateCompat playbackStateCompat) {
+
+    }
+
+    @Override
+    public void onMediaItemsLoaded(List<MediaBrowserCompat.MediaItem> mediaItems) {
+
     }
 
     @Override
     protected void initView(Bundle savedInstanceState) {
         initDrawer();
         MainFragment mainFragment = MainFragment.newInstance();
+        BottomControlBarFragment bottomControlBarFragment = BottomControlBarFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
+                .add(R.id.bottom_bar_container, bottomControlBarFragment, BottomControlBarFragment.Fragment_Tag)
                 .add(R.id.main_container, mainFragment, MainFragment.Fragment_Tag)
                 .commit();
     }
@@ -72,7 +101,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             toggle.syncState();
         }
 
-
     }
 
     @Override
@@ -84,11 +112,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     @Override

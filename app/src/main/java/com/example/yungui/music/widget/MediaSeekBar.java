@@ -24,6 +24,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 
@@ -32,8 +33,10 @@ import android.widget.SeekBar;
  */
 
 public class MediaSeekBar extends AppCompatSeekBar {
+    private static final String TAG = "MediaSeekBar";
     private MediaControllerCompat mMediaController;
     private ControllerCallback mControllerCallback;
+    private boolean isMediaMetadataChange;
 
     private boolean mIsTrackTouch = false;
     //状态回调
@@ -95,6 +98,11 @@ public class MediaSeekBar extends AppCompatSeekBar {
         if (mediaController != null) {
             mControllerCallback = new ControllerCallback();
             mediaController.registerCallback(mControllerCallback);
+            if (mediaController.getPlaybackState() != null && mediaController.getMetadata() != null) {
+                //初始化时设置进度
+                mControllerCallback.onMetadataChanged(mediaController.getMetadata());
+                mControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
+            }
         } else if (mMediaController != null) {
             mMediaController.unregisterCallback(mControllerCallback);
             mControllerCallback = null;
@@ -134,6 +142,10 @@ public class MediaSeekBar extends AppCompatSeekBar {
                 mProgressAnimator.cancel();
                 mProgressAnimator = null;
             }
+            //主要针对直接进入详情页面点击按钮进行播放时没有设置总进度的情况
+            if (!isMediaMetadataChange && mMediaController.getMetadata() != null) {
+                setMax((int) mMediaController.getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+            }
             //获取进度
             final int progress = state != null ? (int) state.getPosition() : 0;
             //设置进度
@@ -155,7 +167,9 @@ public class MediaSeekBar extends AppCompatSeekBar {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
+            isMediaMetadataChange = true;
             int max = metadata != null ? (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) : 0;
+            Log.e(TAG, "onMetadataChanged: Max" + max);
             setProgress(0);
             setMax(max);
         }

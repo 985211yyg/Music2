@@ -1,5 +1,6 @@
 package com.example.yungui.music.service;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,11 +13,29 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.example.yungui.music.MainActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 持有MediaBrowser  MediaController
+ *
+ *    UI                                                              服务Service
+ *
+ *                         connect
+ *                         -MediaBrowserConnectionCallback
+ *                         -MediaBrowserSubscriptionCallback                             ↗MediaSession---setCallback:接受来自mediaController的调用控制MediaPlayer
+ *  【MediaBrowser】    <---------------------------------------=> 【MediaBrowserService】 --获取数据
+ *       |                disconnect                                    |    ↑           ↘MediaPlayer----feedbackCallback:反馈信息给mediaSession.getController回传给controller
+ *       |                                                              |    |
+ *       ↓                                                              ↓    |
+ *                       >通过MediaSessionCompat.Callback
+ *                        控制MediaSession>
+ *  【MediaController】 <----------------------------------------> 【MediaSession】
+ *                      <实现MediaControllerCompat.Callback接口，
+ *                       接受MediaSession信息<
+ *
  * Created by 22892 on 2018/1/10.
  */
 
@@ -83,14 +102,6 @@ public class MediaBrowserAdapter {
                         mediaBrowser.getSessionToken());
                 //==========观察服务，当加载数据，或者出错是调用
                 mediaBrowser.subscribe(mediaBrowser.getRoot(), mediaBrowserSubscriptionCallback);
-                //注册回调
-                mediaController.registerCallback(mediaControllerCallback);
-                //注册监听之后，调用回调方法将现有MediaSession状态同步到UI。
-                mediaControllerCallback.onMetadataChanged(
-                        mediaController.getMetadata());
-                mediaControllerCallback.onPlaybackStateChanged(
-                        mediaController.getPlaybackState());
-
                 //通知所有的监听者,将得到的MediaController传给监听者,
                 performAllListeners(new ListenerCommand() {
                     @Override
@@ -99,6 +110,14 @@ public class MediaBrowserAdapter {
                         changeListener.onConnected(mediaController);
                     }
                 });
+                //注册回调
+                mediaController.registerCallback(mediaControllerCallback);
+                //注册监听之后，调用回调方法将现有MediaSession状态同步到UI。
+                mediaControllerCallback.onMetadataChanged(
+                        mediaController.getMetadata());
+                mediaControllerCallback.onPlaybackStateChanged(
+                        mediaController.getPlaybackState());
+
 
             } catch (RemoteException e) {
                 Log.d(TAG, String.format("onConnected: Problem: %s", e.toString()));
@@ -211,6 +230,7 @@ public class MediaBrowserAdapter {
         }
 
 
+
         //通过比较两个元数据的MediaID
         private boolean isMediaMetadataSame(MediaMetadataCompat newMetadata, MediaMetadataCompat currentMetadata) {
             if (currentMetadata == null || newMetadata == null) {
@@ -234,13 +254,12 @@ public class MediaBrowserAdapter {
                                      @NonNull List<MediaBrowserCompat.MediaItem> mediaItems) {
             //确保MediaController不是null,如果为null程序将退出
             assert mediaController != null;
+            performAllListeners(changeListener -> {
+                changeListener.onMediaItemsLoaded(mediaItems);
+            });
             //都添加到播放列表中
             for (MediaBrowserCompat.MediaItem mediaItem : mediaItems) {
-                if (mediaItem.getDescription().toString().contains("11")) {
-                    continue;
-                } else {
-                    mediaController.addQueueItem(mediaItem.getDescription());
-                }
+                mediaController.addQueueItem(mediaItem.getDescription());
             }
             //数据已经准备完毕，让player做好准备，这可以减少收到播放命令时开始播放的时间。此操作不是必须的
             mediaController.getTransportControls().prepare();
@@ -252,6 +271,7 @@ public class MediaBrowserAdapter {
         public void onError(@NonNull String parentId) {
 
         }
+
 
 
     }
@@ -300,6 +320,15 @@ public class MediaBrowserAdapter {
         return mediaController.getTransportControls();
     }
 
+    //获取MediaController的传输控制
+    public MediaControllerCompat getMediaControllerControls() {
+        if (mediaController == null) {
+            Log.e(TAG, "getMediaControllerControls: MediaContorller is null");
+            throw new IllegalStateException();
+        }
+        return mediaController;
+    }
+
     //对所有的监听器执行命令
     public void performAllListeners(@NonNull ListenerCommand command) {
         Log.e(TAG, "performAllListeners: 开始执行命令");
@@ -311,7 +340,7 @@ public class MediaBrowserAdapter {
                     Log.e(TAG, "performAllListeners: 成功");
                 } catch (Exception e) {
                     removeListener(browserChangeForUIListener);
-                    Log.e(TAG, "performAllListeners: 出错");
+                    Log.e(TAG, "performAllListeners: 出错" + e);
 
                 }
             }
@@ -347,6 +376,8 @@ public class MediaBrowserAdapter {
 
         //连接回调
         public abstract void onConnected(@NonNull MediaControllerCompat mediaControllerCompat);
+
+        public abstract void onMediaItemsLoaded(@NonNull List<MediaBrowserCompat.MediaItem> mediaItems);
 
         //数据改变是的回调
         public abstract void onMetadataChanged(MediaMetadataCompat mediaMetadataCompat);

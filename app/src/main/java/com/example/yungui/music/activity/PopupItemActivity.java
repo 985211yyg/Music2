@@ -5,6 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -69,13 +74,28 @@ public class PopupItemActivity extends BaseActivity {
     }
 
     @Override
-    protected int getMenuID() {
-        return 0;
+    public boolean setToolBar() {
+        return false;
     }
 
     @Override
-    protected boolean setToolBar() {
-        return false;
+    public void onPlayBackServiceConnected(@NonNull MediaControllerCompat mediaControllerCompat) {
+
+    }
+
+    @Override
+    public void onMetadataChanged(MediaMetadataCompat mediaMetadataCompat) {
+
+    }
+
+    @Override
+    public void onPlaybackStateChanged(PlaybackStateCompat playbackStateCompat) {
+
+    }
+
+    @Override
+    public void onMediaItemsLoaded(List<MediaBrowserCompat.MediaItem> mediaItems) {
+
     }
 
     @Override

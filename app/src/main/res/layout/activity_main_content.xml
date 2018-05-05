@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <!--主页内容区-->
     <FrameLayout
         android:id="@+id/main_container"
@@ -9,10 +11,11 @@
         android:layout_height="match_parent" />
 
     <!--底部控制栏-->
-    <fragment
+    <FrameLayout
+        android:id="@+id/bottom_bar_container"
         android:name="com.example.yungui.music.fragment.BottomControlBarFragment"
-        android:id="@+id/bottom_control_container"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true" />
+
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.example.yungui.music.model;
+package com.example.yungui.music.dataUtils;
 
 import android.arch.lifecycle.Observer;
 import android.content.Context;
@@ -33,28 +33,37 @@ public class MusicLibrary {
 
     private void initData(Context context) {
         AppExecutors.getInstance().localIO().execute(() -> {
-            MusicInfoDataBase.getInstance(context).musicInfoDao().getAll().observeForever(new Observer<List<MusicInfo>>() {
-                @Override
-                public void onChanged(@Nullable List<MusicInfo> musicInfos) {
-                    for (MusicInfo musicInfo : musicInfos) {
-                        MediaMetadataCompat mediaMetadataCompat = createMediaMetadataCompat(
-                                String.valueOf(musicInfo.songId),
-                                musicInfo.musicName,
-                                musicInfo.artist,
-                                musicInfo.albumName,
-                                musicInfo.mimeType,
-                                musicInfo.duration,
-                                musicInfo.data
-                        );
-                        musics.put(String.valueOf(musicInfo.songId), mediaMetadataCompat);
-                        MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(mediaMetadataCompat.getDescription(),
-                                MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-                        mediaItems.add(mediaItem);
-                    }
-                    Log.e(TAG, "mediaItems: " + mediaItems.size());
-                    Log.e(TAG, "mediaItems: " + musics.size());
-                }
-            });
+            MusicInfoDataBase.getInstance(context)
+                    .musicInfoDao()
+                    .getAll()
+                    .observeForever(new Observer<List<MusicInfo>>() {
+                        @Override
+                        public void onChanged(@Nullable List<MusicInfo> musicInfos) {
+                            for (MusicInfo musicInfo : musicInfos) {
+                                if (musicInfo.musicName == "" ||
+                                        musicInfo.albumName == "" ||
+                                        musicInfo.artist == "") {
+                                    continue;
+                                }
+                                MediaMetadataCompat mediaMetadataCompat = createMediaMetadataCompat(
+                                        String.valueOf(musicInfo.songId),
+                                        musicInfo.musicName,
+                                        musicInfo.artist,
+                                        musicInfo.albumName,
+                                        musicInfo.mimeType,
+                                        musicInfo.duration,
+                                        musicInfo.data
+                                );
+                                musics.put(String.valueOf(musicInfo.songId), mediaMetadataCompat);
+                                MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat
+                                        .MediaItem(mediaMetadataCompat.getDescription(),
+                                        MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+                                mediaItems.add(mediaItem);
+                            }
+                            Log.e(TAG, "mediaItems: " + mediaItems.size());
+                            Log.e(TAG, "mediaItems: " + musics.size());
+                        }
+                    });
 
         });
 
@@ -77,8 +86,6 @@ public class MusicLibrary {
 
     /**
      * 返回对应ID的MediaMetadataCompat
-     *
-     *
      */
     public MediaMetadataCompat queryMetadata(@NonNull String mediaId) {
         if (musics != null && musics.size() > 0) {

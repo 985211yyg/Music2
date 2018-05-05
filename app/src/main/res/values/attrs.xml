@@ -15,8 +15,10 @@
         <attr name="progressColor" format="color" />
         <attr name="refreshColor" format="color" />
         <attr name="progress" format="float" />
+        <attr name="MaxProgress" format="float" />
         <attr name="refreshAngle" format="float" />
         <attr name="refreshing" format="boolean" />
+        <attr name="showProgress" format="boolean" />
     </declare-styleable>
 
 </resources>

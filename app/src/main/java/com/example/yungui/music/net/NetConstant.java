@@ -20,7 +20,7 @@ public class NetConstant {
     public static final String[] BANNER_ITEM_HREF = new String[]{BANNER_IMG_1_href, BANNER_IMG_2_href, BANNER_IMG_3_href, BANNER_IMG_4_href, BANNER_IMG_5_href};
 
 
-    public static final String MP3_URL = "http://music.163.com/song/media/outer/url?id=XXXXXXX.mp3";
+    public static final String MP3_URL = "http://music.163.com/song/media/outer/url?id=";
     /**
      * 搜索
      * s=龙卷风 搜索关键字

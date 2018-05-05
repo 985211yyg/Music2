@@ -83,7 +83,6 @@ public class MusicRepository {
      * @return
      */
     public LiveData<List<MusicInfo>> getAllMusicInfo() {
-        Log.e(TAG, "-----------getAllMusicInfo:开始 ");
         //再次初始化数据
         initializeData();
         return musicInfoDao.getAll();

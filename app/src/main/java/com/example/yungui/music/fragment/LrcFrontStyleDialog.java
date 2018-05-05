@@ -27,7 +27,6 @@ public class LrcFrontStyleDialog extends BottomSheetDialogFragment {
     private RadioGroup frontSize;
     private RadioGroup frontColor;
     private Button cancel;
-    private SongDetailActivity songDetailActivity;
     private PreferencesUtility preferencesUtility;
 
     public static LrcFrontStyleDialog newInstance() {
@@ -40,7 +39,6 @@ public class LrcFrontStyleDialog extends BottomSheetDialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        songDetailActivity = (SongDetailActivity) context;
     }
 
     @Override

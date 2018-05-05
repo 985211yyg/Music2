@@ -18,12 +18,16 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title=" ">
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tabLayout"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:tabBackground="?attr/selectableItemBackground"
+                app:tabGravity="center"
                 app:tabIndicatorColor="@color/themeColor"
                 app:tabMode="fixed"
                 app:tabSelectedTextColor="@android:color/white"
@@ -39,7 +43,9 @@
             android:layout_marginLeft="@dimen/dp_4"
             android:layout_marginRight="@dimen/dp_4"
             android:background="@drawable/round_background"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
             app:queryHint="@string/queryHint" />
+
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager

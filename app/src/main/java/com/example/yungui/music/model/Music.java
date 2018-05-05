@@ -47,7 +47,8 @@ public class Music {
     }
 
     public static List<Music> arrayMusicFromData(String str) {
-        Type listType = new TypeToken<ArrayList<Music>>() {}.getType();
+        Type listType = new TypeToken<ArrayList<Music>>() {
+        }.getType();
 
         return new Gson().fromJson(str, listType);
     }

@@ -1,26 +1,30 @@
 package com.example.yungui.music.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.example.yungui.linelrcview.LineLrcView;
 import com.example.yungui.linelrcview.LrcInfo;
-import com.example.yungui.linelrcview.LrcUtils;
 import com.example.yungui.music.R;
 import com.example.yungui.music.base.BaseFragment;
-import com.example.yungui.music.service.MusicPlayer;
 import com.example.yungui.music.widget.CircleImageView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 
 /**
@@ -30,11 +34,35 @@ import io.reactivex.schedulers.Schedulers;
 public class SongDetailAlbumFragment extends BaseFragment {
     public static final String TAG = SongDetailAlbumFragment.class.getSimpleName();
     private static final String ROTATE = "rotate";
+    @BindView(R.id.singer_linearLayout)
+    LinearLayout singerLinearLayout;
+    @BindView(R.id.song_info_linearLayout)
+    LinearLayout songInfoLinearLayout;
+    @BindView(R.id.circle_cd)
+    CircleImageView circleCd;
+    @BindView(R.id.lineLrcView)
+    LineLrcView lineLrcView;
+    @BindView(R.id.relativeLayout)
+    RelativeLayout relativeLayout;
+    Unbinder unbinder;
     private float rotate;
     private LrcInfo lrcInfo;
 
-    private CircleImageView circleImageView;
-    private LineLrcView lineLrcView;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.e(TAG, "onCreate: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 
     public SongDetailAlbumFragment() {
 
@@ -42,9 +70,6 @@ public class SongDetailAlbumFragment extends BaseFragment {
 
     public static SongDetailAlbumFragment newInstance(float rotate) {
         SongDetailAlbumFragment fragment = new SongDetailAlbumFragment();
-        Bundle args = new Bundle();
-        args.putFloat(ROTATE, rotate);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -56,12 +81,7 @@ public class SongDetailAlbumFragment extends BaseFragment {
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        rotate = getArguments().getFloat(ROTATE);
-        circleImageView = rootView.findViewById(R.id.circle_cd);
-        circleImageView.setCurrentRotateValue(rotate);
-        lineLrcView = rootView.findViewById(R.id.lineLrcView);
-        loadLrc(lineLrcView);
-        updateLrc(lineLrcView);
+
 
     }
 
@@ -70,96 +90,22 @@ public class SongDetailAlbumFragment extends BaseFragment {
 
     }
 
-    /**
-     * 跟新歌词
-     *
-     * @param lineLrcView
-     */
-    private void updateLrc(final LineLrcView lineLrcView) {
-        Observable.interval(100, TimeUnit.MILLISECONDS)
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        Observable.just(MusicPlayer.position())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Observer<Long>() {
-                                    @Override
-                                    public void onSubscribe(Disposable d) {
+    @Override
+    public void onMetadataChanged(MediaMetadataCompat mediaMetadataCompat) {
+        Log.e(TAG, "onMetadataChanged: ");
 
-                                    }
-
-                                    @Override
-                                    public void onNext(Long value) {
-                                        lineLrcView.setCurrentTime(value);
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-
-                                    }
-
-                                    @Override
-                                    public void onComplete() {
-
-                                    }
-                                });
-
-                    }
-                })
-                .subscribe(new Observer<Long>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Long value) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
-
-    }
-
-    private void loadLrc(final LineLrcView lineLrcView) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    InputStream inputStream = mContext.getResources().getAssets().open("田馥甄 - 魔鬼中的天使.lrc");
-                    lrcInfo = LrcUtils.newInstance()
-                            .setupLrcResource(inputStream, "UTF-8")
-                            .getLrcInfo();
-                    if (lrcInfo != null && lrcInfo.lineInfos != null && lrcInfo.lineInfos.size() > 0) {
-                        lineLrcView.setLrcInfo(lrcInfo);
-                    }
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPlaybackStateChanged(PlaybackStateCompat playbackStateCompat) {
+        Log.e(TAG, "onPlaybackStateChanged: ");
+
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onMediaItemsLoaded(List<MediaBrowserCompat.MediaItem> mediaItems) {
+        Log.e(TAG, "onMediaItemsLoaded: ");
+
     }
 
 }
